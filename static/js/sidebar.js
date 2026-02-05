@@ -45,7 +45,7 @@
                     <span class="user-email">admin@quickhire.com</span>
                 </div>
             </div>
-            <a href="index.html" class="logout-link" title="Logout">
+            <a href="../landing%20page/index.html" class="logout-link" title="Logout">
                 <i data-feather="log-out"></i>
             </a>
         </div>

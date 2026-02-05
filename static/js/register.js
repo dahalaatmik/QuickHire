@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Simulate API call
             setTimeout(() => {
                 // Redirect to dashboard
-                window.location.href = 'dashboard.html';
+                window.location.href = '../dashboard/dashboard.html';
             }, 2000);
         });
     }

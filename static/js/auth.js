@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Simulate API call
             setTimeout(() => {
                 // Redirect to dashboard
-                window.location.href = 'dashboard.html';
+                window.location.href = '../dashboard/dashboard.html';
             }, 1500);
         });
     }
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             // Simulate registration then go to dashboard
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                window.location.href = '../dashboard/dashboard.html';
             }, 1000);
         });
     }
