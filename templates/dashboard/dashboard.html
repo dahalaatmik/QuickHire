@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — QuickHire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar injected by sidebar.js -->
+
+    <main class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" id="menu-toggle"><i data-feather="menu"></i></button>
+            <div class="breadcrumb"><span>Dashboard</span></div>
+            <div class="topbar-actions">
+                <a href="jobs.html" class="btn-outline-sm"><i data-feather="plus"></i> Create Job</a>
+                <button class="icon-btn"><i data-feather="bell"></i></button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <!-- Stat Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon"><i data-feather="briefcase"></i></span>
+                    <div class="stat-label">Active Jobs</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">↑ 3 this week</div>
+                </div>
+                <div class="stat-card green">
+                    <span class="stat-icon"><i data-feather="users"></i></span>
+                    <div class="stat-label">Total Candidates</div>
+                    <div class="stat-value">347</div>
+                    <div class="stat-change">↑ 42 this month</div>
+                </div>
+                <div class="stat-card amber">
+                    <span class="stat-icon"><i data-feather="clock"></i></span>
+                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-change down">↑ 5 awaiting action</div>
+                </div>
+                <div class="stat-card purple">
+                    <span class="stat-icon"><i data-feather="check-circle"></i></span>
+                    <div class="stat-label">Interviews Scheduled</div>
+                    <div class="stat-value">9</div>
+                    <div class="stat-change">↑ 2 this week</div>
+                </div>
+            </div>
+
+            <!-- Two col: Upload + Activity -->
+            <div class="two-col">
+                <div>
+                    <div class="section-heading"><h2>Quick Screen</h2></div>
+                    <div id="upload-view" class="card-panel" style="padding:0;overflow:hidden;">
+                        <div class="drop-zone" id="drop-zone" style="border-radius:10px;">
+                            <i data-feather="upload-cloud" class="drop-icon"></i>
+                            <h3 class="drop-header">Upload Job Description</h3>
+                            <p class="drop-subtext">Drag &amp; drop a PDF or DOCX to start AI screening</p>
+                            <button class="btn-outline" type="button" id="browse-btn">Browse Files</button>
+                            <input type="file" id="file-input" accept=".pdf,.docx" style="display:none;">
+                        </div>
+                        <div id="processing-state" style="display:none;padding:var(--spacing-lg);">
+                            <div class="processing-content">
+                                <div class="loader" style="width:40px;height:40px;margin:0 auto var(--spacing-md);"></div>
+                                <p class="processing-text" style="font-size:var(--font-size-base);margin-bottom:var(--spacing-md);">Analyzing requirements…</p>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                                <p class="progress-percent" id="progress-percent" style="margin-top:6px;">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-heading"><h2>Recent Activity</h2></div>
+                    <div class="card-panel" style="padding:0;" id="activity-list"></div>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div id="results-section" style="display:none;margin-top:var(--spacing-xl);">
+                <div class="section-heading">
+                    <h2>Senior Developer — Candidate Results</h2>
+                    <div style="display:flex;gap:var(--spacing-sm);">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="high">High Match</button>
+                        <button class="filter-btn" data-filter="shortlisted">Shortlisted</button>
+                        <button class="filter-btn" data-filter="rejected">Rejected</button>
+                    </div>
+                </div>
+                <div class="data-table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Candidate</th><th>Experience</th><th>Top Skills</th><th>Match</th><th>Status</th>
+                        </tr></thead>
+                        <tbody id="candidates-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Drawer -->
+    <div id="candidate-drawer" class="drawer">
+        <div class="drawer-backdrop" id="drawer-backdrop"></div>
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h2 class="drawer-title" id="drawer-candidate-name">—</h2>
+                <button class="drawer-close" id="drawer-close"><i data-feather="x"></i></button>
+            </div>
+            <div class="drawer-body">
+                <section class="drawer-section">
+                    <h3 class="section-header">AI Match Score</h3>
+                    <div class="match-score-display">
+                        <div class="score-ring-large">
+                            <svg width="120" height="120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#1F2833" stroke-width="8"/>
+                                <circle id="drawer-score-circle" cx="60" cy="60" r="54" fill="none" stroke="#2ECC71" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+                            </svg>
+                            <span class="score-text" id="drawer-score-text">95%</span>
+                        </div>
+                        <ul class="ai-summary" id="drawer-ai-summary"></ul>
+                    </div>
+                </section>
+                <section class="drawer-section">
+                    <h3 class="section-header">Skills</h3>
+                    <div id="drawer-skills"></div>
+                </section>
+                <section class="drawer-section">
+                    <h3 class="section-header">Contact</h3>
+                    <p style="font-size:var(--font-size-sm);color:var(--color-text-low);" id="drawer-email">—</p>
+                </section>
+                <section class="drawer-section">
+                    <h3 class="section-header">Resume Preview</h3>
+                    <div class="resume-preview"><div class="resume-placeholder"><i data-feather="file-text"></i><p>Resume preview — demo mode</p></div></div>
+                </section>
+            </div>
+            <div class="drawer-footer">
+                <button class="btn-danger" id="reject-btn"><i data-feather="x-circle"></i> Reject</button>
+                <button class="btn-neutral" id="shortlist-btn"><i data-feather="star"></i> Shortlist</button>
+                <button class="btn-primary" id="schedule-btn"><i data-feather="calendar"></i> Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Schedule Interview</h2>
+                <button class="modal-close" id="modal-close"><i data-feather="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"><label>Candidate Email</label><input type="email" id="candidate-email" readonly></div>
+                <div class="form-group"><label>Subject</label><input type="text" id="email-subject"></div>
+                <div class="form-group"><label>Message</label><textarea id="email-message" rows="5"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="modal-cancel">Cancel</button>
+                <button class="btn-primary" id="send-invitation"><i data-feather="send"></i> Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./sidebar.js"></script>
+    <script src="./toast.js"></script>
+    <script src="./dashboard.js"></script>
+</body>
+</html>

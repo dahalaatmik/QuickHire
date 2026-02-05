@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — QuickHire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="dashboard-body">
+
+    <main class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" id="menu-toggle"><i data-feather="menu"></i></button>
+            <div class="breadcrumb"><span>Settings</span></div>
+            <div class="topbar-actions">
+                <button class="icon-btn"><i data-feather="bell"></i></button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <h1 style="font-size:var(--font-size-3xl);font-weight:700;color:var(--color-text-high);margin-bottom:var(--spacing-xs);">Settings</h1>
+            <p style="font-size:var(--font-size-sm);color:var(--color-text-disabled);margin-bottom:var(--spacing-2xl);">Manage your QuickHire workspace preferences and configurations</p>
+
+            <!-- Tabs -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="general">General</button>
+                <button class="tab-btn" data-tab="notifications">Notifications</button>
+                <button class="tab-btn" data-tab="team">Team & Access</button>
+                <button class="tab-btn" data-tab="billing">Billing</button>
+            </div>
+
+            <!-- General Tab -->
+            <div class="tab-panel active" data-panel="general">
+                <div class="settings-section">
+                    <h3>Workspace Details</h3>
+                    <p>Update your organization name and basic information</p>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Organization Name</h4>
+                            <p>This appears in emails and dashboards</p>
+                        </div>
+                        <input type="text" class="settings-input" value="Acme Corp" id="org-name">
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Industry</h4>
+                            <p>Helps us customize features</p>
+                        </div>
+                        <select class="settings-input" id="industry">
+                            <option>Technology</option>
+                            <option>Finance</option>
+                            <option>Healthcare</option>
+                            <option>Education</option>
+                            <option>Retail</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Company Size</h4>
+                            <p>Number of employees</p>
+                        </div>
+                        <select class="settings-input" id="company-size">
+                            <option>1-10</option>
+                            <option>11-50</option>
+                            <option selected>51-200</option>
+                            <option>201-1000</option>
+                            <option>1000+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>AI Screening Preferences</h3>
+                    <p>Control how the AI evaluates candidates</p>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Auto-Screen New Candidates</h4>
+                            <p>Automatically run AI matching on new applications</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="auto-screen">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Minimum Match Threshold</h4>
+                            <p>Only show candidates above this score</p>
+                        </div>
+                        <select class="settings-input" id="match-threshold">
+                            <option>50%</option>
+                            <option>60%</option>
+                            <option selected>70%</option>
+                            <option>80%</option>
+                            <option>90%</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Bias Detection</h4>
+                            <p>Flag potentially biased language in job descriptions</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="bias-detect">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div class="tab-panel" data-panel="notifications">
+                <div class="settings-section">
+                    <h3>Email Notifications</h3>
+                    <p>Choose which emails you receive from QuickHire</p>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>New Candidate Matches</h4>
+                            <p>When a high-match candidate applies</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="notif-matches">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Weekly Summary</h4>
+                            <p>Digest of hiring activity every Monday</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="notif-weekly">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Job Posting Expirations</h4>
+                            <p>Reminders when jobs are closing soon</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="notif-expire">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Product Updates</h4>
+                            <p>New features and platform updates</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="notif-updates">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Tab -->
+            <div class="tab-panel" data-panel="team">
+                <div class="settings-section">
+                    <h3>Team Members</h3>
+                    <p>Manage who can access your QuickHire workspace</p>
+                    <div style="margin-top:var(--spacing-lg);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md);">
+                            <span style="font-size:var(--font-size-sm);color:var(--color-text-low);">4 team members</span>
+                            <button class="btn-outline-sm"><i data-feather="plus"></i> Invite Member</button>
+                        </div>
+                        <div class="data-table-wrap">
+                            <table>
+                                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="display:flex;align-items:center;gap:8px;"><div class="avatar-sm">AU</div>Admin User</td>
+                                        <td>admin@acme.com</td>
+                                        <td>Owner</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="display:flex;align-items:center;gap:8px;"><div class="avatar-sm">JD</div>Jane Doe</td>
+                                        <td>jane@acme.com</td>
+                                        <td>Admin</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="display:flex;align-items:center;gap:8px;"><div class="avatar-sm">JS</div>John Smith</td>
+                                        <td>john@acme.com</td>
+                                        <td>Member</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="display:flex;align-items:center;gap:8px;"><div class="avatar-sm">EM</div>Emily Martin</td>
+                                        <td>emily@acme.com</td>
+                                        <td>Member</td>
+                                        <td><span class="badge badge-pending">Invited</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Tab -->
+            <div class="tab-panel" data-panel="billing">
+                <div class="settings-section">
+                    <h3>Current Plan</h3>
+                    <p>You're on the Professional plan</p>
+                    <div class="card-panel" style="background:linear-gradient(135deg,var(--color-surface),var(--color-elevated));border:1px solid rgba(102,252,241,0.15);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <h3 style="font-size:var(--font-size-xl);color:var(--color-text-high);margin-bottom:4px;">Professional</h3>
+                                <p style="font-size:var(--font-size-sm);color:var(--color-text-disabled);">$99 / month • Billed monthly</p>
+                                <ul style="margin-top:var(--spacing-md);font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.8;">
+                                    <li>✓ Unlimited job postings</li>
+                                    <li>✓ AI-powered candidate matching</li>
+                                    <li>✓ Advanced analytics</li>
+                                    <li>✓ Up to 10 team members</li>
+                                </ul>
+                            </div>
+                            <button class="btn-outline">Upgrade Plan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Payment Method</h3>
+                    <p>Manage your payment information</p>
+                    <div class="settings-row">
+                        <div class="settings-row-left">
+                            <h4>Visa •••• 4242</h4>
+                            <p>Expires 12/2026</p>
+                        </div>
+                        <button class="btn-outline-sm">Update</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Billing History</h3>
+                    <p>Download past invoices and receipts</p>
+                    <div class="data-table-wrap">
+                        <table>
+                            <thead><tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:600;color:var(--color-text-high);">INV-2026-002</td>
+                                    <td>Feb 1, 2026</td>
+                                    <td>$99.00</td>
+                                    <td><span class="badge badge-active">Paid</span></td>
+                                    <td><button class="btn-outline-sm" style="padding:4px 10px;font-size:var(--font-size-xs);"><i data-feather="download"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600;color:var(--color-text-high);">INV-2026-001</td>
+                                    <td>Jan 1, 2026</td>
+                                    <td>$99.00</td>
+                                    <td><span class="badge badge-active">Paid</span></td>
+                                    <td><button class="btn-outline-sm" style="padding:4px 10px;font-size:var(--font-size-xs);"><i data-feather="download"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="danger-zone">
+                <h3>Danger Zone</h3>
+                <p>Irreversible and destructive actions</p>
+                <div style="display:flex;gap:var(--spacing-md);margin-top:var(--spacing-md);">
+                    <button class="btn-danger-solid">Delete All Data</button>
+                    <button class="btn-danger-solid">Close Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="./sidebar.js"></script>
+    <script src="./toast.js"></script>
+    <script src="./settings.js"></script>
+</body>
+</html>

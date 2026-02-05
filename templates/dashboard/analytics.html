@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics — QuickHire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="dashboard-body">
+
+    <main class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" id="menu-toggle"><i data-feather="menu"></i></button>
+            <div class="breadcrumb"><span>Analytics</span></div>
+            <div class="topbar-actions">
+                <select class="settings-input" id="time-range" style="width:130px;">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d" selected>Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                </select>
+                <button class="btn-outline-sm" id="export-btn"><i data-feather="download"></i> Export</button>
+                <button class="icon-btn"><i data-feather="bell"></i></button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <!-- KPI Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon"><i data-feather="bar-chart-2"></i></span>
+                    <div class="stat-label">Applications</div>
+                    <div class="stat-value">214</div>
+                    <div class="stat-change">↑ 18% vs prev period</div>
+                </div>
+                <div class="stat-card green">
+                    <span class="stat-icon"><i data-feather="check-circle"></i></span>
+                    <div class="stat-label">Conversion Rate</div>
+                    <div class="stat-value">12.4%</div>
+                    <div class="stat-change">↑ 2.1% improvement</div>
+                </div>
+                <div class="stat-card amber">
+                    <span class="stat-icon"><i data-feather="clock"></i></span>
+                    <div class="stat-label">Avg Time to Hire</div>
+                    <div class="stat-value">18 days</div>
+                    <div class="stat-change down">↓ 3 days faster</div>
+                </div>
+                <div class="stat-card purple">
+                    <span class="stat-icon"><i data-feather="dollar-sign"></i></span>
+                    <div class="stat-label">Cost per Hire</div>
+                    <div class="stat-value">$2,340</div>
+                    <div class="stat-change">↓ $180 saved</div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <!-- Applications over time (bar chart) -->
+                <div class="card-panel">
+                    <h3>Applications Over Time</h3>
+                    <div class="bar-chart" id="app-chart"></div>
+                </div>
+
+                <!-- Candidates by department (horizontal bars) -->
+                <div class="card-panel">
+                    <h3>Applications by Department</h3>
+                    <div id="dept-breakdown"></div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <!-- Funnel / Pipeline -->
+                <div class="card-panel">
+                    <h3>Hiring Funnel</h3>
+                    <div id="funnel-chart"></div>
+                </div>
+
+                <!-- Top skills in demand -->
+                <div class="card-panel">
+                    <h3>Top Skills in Demand</h3>
+                    <div id="skills-demand"></div>
+                </div>
+            </div>
+
+            <!-- Recent hires table -->
+            <div class="section-heading" style="margin-top:var(--spacing-xl);"><h2>Recent Hires</h2></div>
+            <div class="data-table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>Candidate</th><th>Role</th><th>Department</th><th>Match Score</th><th>Time to Hire</th><th>Hired On</th>
+                    </tr></thead>
+                    <tbody id="hires-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="./sidebar.js"></script>
+    <script src="./toast.js"></script>
+    <script src="./analytics.js"></script>
+</body>
+</html>

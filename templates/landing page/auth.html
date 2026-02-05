@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - QuickHire</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="./styles.css">
+    
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+    <!-- Authentication Page -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">QuickHire</div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form active">
+                <h2 class="auth-header">Welcome Back</h2>
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-email">Work Email</label>
+                        <input type="email" id="login-email" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-full" id="login-btn">
+                        <span id="login-text">Sign In</span>
+                        <span id="login-spinner" class="spinner" style="display: none;"></span>
+                    </button>
+                    <p class="auth-switch">Don't have an account? <a href="#" id="switch-to-register">Start Free Trial</a></p>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form">
+                <h2 class="auth-header">Start Your 14-Day Free Trial</h2>
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="reg-email">Work Email</label>
+                        <input type="email" id="reg-email" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="org-name">Organization Name</label>
+                        <input type="text" id="org-name" placeholder="Your Company Inc." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="website">Website URL</label>
+                        <input type="url" id="website" placeholder="https://yourcompany.com">
+                    </div>
+                    <p class="auth-disclaimer">By continuing, you agree to our Terms of Service.</p>
+                    <button type="submit" class="btn-primary btn-full">Create Account</button>
+                    <p class="auth-switch">Already have an account? <a href="#" id="switch-to-login">Sign In</a></p>
+                </form>
+            </div>
+
+            <a href="index.html" class="back-btn">
+                <i data-feather="arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="./auth.js"></script>
+</body>
+</html>
