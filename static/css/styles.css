@@ -664,9 +664,31 @@ a:hover {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-md);
+    position: relative;
+    overflow: hidden;
     background:
-        radial-gradient(circle at 30% 30%, rgba(102, 252, 241, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 30% 30%, rgba(102, 252, 241, 0.06) 0%, transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.65) 0%, transparent 65%),
         var(--color-canvas);
+}
+
+/* Subtle grid over the black background */
+.auth-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.35;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    transition: opacity var(--transition-slow);
+}
+
+.auth-container:hover::before {
+    opacity: 0.5;
 }
 
 @media (min-width: 1024px) {
@@ -676,27 +698,47 @@ a:hover {
 }
 
 .auth-card {
-    background: radial-gradient(circle at top left, rgba(0, 212, 102, 0.12), transparent 55%),
-                radial-gradient(circle at bottom right, rgba(0, 168, 82, 0.18), transparent 55%),
-                rgba(16, 22, 30, 0.92);
-    backdrop-filter: blur(26px);
-    border: 1px solid rgba(102, 252, 241, 0.25);
+    /* Clean, launch-ready card surface */
+    background: linear-gradient(145deg, #151a22, #11151c);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: clamp(12px, 2vw, 16px);
     padding: clamp(var(--spacing-lg), 3vw, var(--spacing-2xl));
     width: min(95%, 600px);
-    box-shadow:
-        0 18px 45px rgba(0, 0, 0, 0.85),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
     position: relative;
     max-height: 95vh;
     overflow-y: auto;
+    overflow: visible;
+}
+
+/* Soft halo glow on hover, kept subtle for production */
+.auth-card::after {
+    content: '';
+    position: absolute;
+    inset: -18px;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at top, rgba(0, 212, 102, 0.18), transparent 60%),
+        radial-gradient(circle at bottom, rgba(0, 0, 0, 0.6), transparent 65%);
+    opacity: 0;
+    filter: blur(2px);
+    transition:
+        opacity var(--transition-base),
+        transform var(--transition-base);
+    transform: scale(0.98);
+    z-index: -1;
+}
+
+.auth-card:hover::after {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .register-card {
     width: min(95%, 800px);
-    background: radial-gradient(circle at top right, rgba(0, 212, 102, 0.16), transparent 55%),
-                radial-gradient(circle at bottom left, rgba(0, 168, 82, 0.22), transparent 55%),
-                rgba(16, 22, 30, 0.96);
+    /* Match auth card, slightly larger footprint only */
+    background: linear-gradient(145deg, #151a22, #11151c);
 }
 
 @media (min-width: 1024px) {
