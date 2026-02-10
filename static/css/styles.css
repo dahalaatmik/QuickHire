@@ -420,7 +420,7 @@ a:hover {
 
 /* Features Section - Kinso Style */
 .features-section {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-2xl) 0 var(--spacing-xl);
     background-color: var(--color-canvas);
     scroll-margin-top: 80px;
 }
@@ -487,7 +487,7 @@ a:hover {
 
 /* Team Section */
 .team-section {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-2xl) 0 var(--spacing-3xl);
     background-color: var(--color-canvas);
     scroll-margin-top: 80px;
 }
@@ -1708,36 +1708,29 @@ a:hover {
         width: 100%;
     }
 
-    /* Mobile-friendly feature mockup layout */
+    /* Hide the feature image/card on mobile to keep the
+       section text-focused and reduce vertical space */
     .features-sticky {
-        position: relative;
-        height: auto;
-        min-height: 260px;
-        margin-bottom: var(--spacing-lg);
+        display: none;
     }
 
-    .mockup-container {
-        margin-left: 0;
-        margin-bottom: 0;
-        max-width: 100%;
+    /* Make the feature copy scroll inside the section so
+       the page doesn't feel overwhelmingly long on phones. */
+    .features-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
     }
 
-    .features-sticky {
-        position: relative;
-        height: auto;
-        min-height: 300px;
-        margin-bottom: var(--spacing-xl);
-    }
-    
-    .mockup-container {
-        margin-left: 0;
-        margin-bottom: 0;
-        max-width: 100%;
+    .features-scroll {
+        max-height: 40vh;
+        overflow-y: auto;
+        padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
     }
 
     .feature-block {
         min-height: auto;
-        padding: var(--spacing-xl);
+        padding: var(--spacing-md) 0;
     }
     
     .feature-title {
@@ -1774,7 +1767,7 @@ a:hover {
     }
     
     .team-section {
-        padding: var(--spacing-2xl) 0;
+        padding: var(--spacing-xl) 0 var(--spacing-2xl);
     }
     
     .auth-card {
