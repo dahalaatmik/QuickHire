@@ -8,23 +8,23 @@
    ======================================== */
 :root {
     /* Backgrounds */
-    --color-canvas: #0B0C10;
-    --color-surface: #1F2833;
-    --color-elevated: #2C353F;
+    --color-canvas: #000000;
+    --color-surface: #1A1A1A;
+    --color-elevated: #2A2A2A;
 
     /* Primary Accents */
-    --color-primary: #66FCF1;
-    --color-secondary: #45A29E;
+    --color-primary: #00D466;
+    --color-secondary: #00A852;
 
     /* Functional Colors */
-    --color-success: #2ECC71;
-    --color-warning: #F1C40F;
-    --color-danger: #E74C3C;
+    --color-success: #00D466;
+    --color-warning: #FFD700;
+    --color-danger: #FF4444;
 
     /* Typography */
     --color-text-high: #FFFFFF;
-    --color-text-low: #C5C6C7;
-    --color-text-disabled: #6D7680;
+    --color-text-low: #CCCCCC;
+    --color-text-disabled: #888888;
 
     /* Spacing */
     --spacing-xs: 0.25rem;

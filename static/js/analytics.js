@@ -36,7 +36,7 @@ function renderDeptBreakdown() {
     if (!el) return;
     const depts = [
         { name:'Engineering',  count:102, color:'var(--color-primary)' },
-        { name:'Product',      count:38,  color:'#9B59B6' },
+        { name:'Product',      count:38,  color:'var(--color-secondary)' },
         { name:'Design',       count:31,  color:'var(--color-warning)' },
         { name:'Sales',        count:24,  color:'var(--color-success)' },
         { name:'HR',           count:19,  color:'var(--color-danger)' }
@@ -62,9 +62,9 @@ function renderFunnel() {
     if (!el) return;
     const stages = [
         { label:'Applications',   count:214, color:'var(--color-primary)' },
-        { label:'Screened',       count:168, color:'#5DADE2' },
+        { label:'Screened',       count:168, color:'var(--color-text-high)' },
         { label:'Shortlisted',    count:52,  color:'var(--color-warning)' },
-        { label:'Interviewed',    count:26,  color:'#9B59B6' },
+        { label:'Interviewed',    count:26,  color:'var(--color-warning)' },
         { label:'Hired',          count:14,  color:'var(--color-success)' }
     ];
     const max = stages[0].count;
@@ -118,7 +118,7 @@ function renderRecentHires() {
         { name:'Emily Rodriguez',role:'DevOps Engineer',    dept:'Engineering', match:91, days:16, date:'Dec 20, 2025' }
     ];
     tbody.innerHTML = hires.map(h => {
-        const color = h.match >= 90 ? '#2ECC71' : h.match >= 70 ? '#F1C40F' : '#EF4444';
+        const color = h.match >= 90 ? '#00D466' : h.match >= 70 ? '#FFD700' : '#FF4444';
         const circ  = 2 * Math.PI * 16;
         const off   = circ * (1 - h.match / 100);
         const initials = h.name.split(' ').map(n => n[0]).join('');
@@ -131,7 +131,7 @@ function renderRecentHires() {
             <td>${h.dept}</td>
             <td><div class="mini-ring">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">
-                    <circle cx="22" cy="22" r="16" fill="none" stroke="#1F2833" stroke-width="4"/>
+                    <circle cx="22" cy="22" r="16" fill="none" stroke="#2A2A2A" stroke-width="4"/>
                     <circle cx="22" cy="22" r="16" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round"/>
                 </svg><div class="ring-label" style="color:${color}">${h.match}%</div></div></td>
             <td style="color:var(--color-text-low);font-size:var(--font-size-sm);">${h.days} days</td>

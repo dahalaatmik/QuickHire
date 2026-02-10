@@ -35,7 +35,7 @@ function renderCandidates(filter) {
     if (filter.role   && filter.role !== 'all')   list = list.filter(c => c.role === filter.role);
 
     tbody.innerHTML = list.map(c => {
-        const color = c.match >= 90 ? '#2ECC71' : c.match >= 70 ? '#F1C40F' : '#EF4444';
+        const color = c.match >= 90 ? '#00D466' : c.match >= 70 ? '#FFD700' : '#FF4444';
         const circ  = 2 * Math.PI * 16;
         const off   = circ * (1 - c.match / 100);
         const bt    = c.status.charAt(0).toUpperCase() + c.status.slice(1);
@@ -51,7 +51,7 @@ function renderCandidates(filter) {
             <td>${c.skills.slice(0,3).map(s=>`<span class="pill-tag">${s}</span>`).join('')}</td>
             <td><div class="mini-ring">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">
-                    <circle cx="22" cy="22" r="16" fill="none" stroke="#1F2833" stroke-width="4"/>
+                    <circle cx="22" cy="22" r="16" fill="none" stroke="#2A2A2A" stroke-width="4"/>
                     <circle cx="22" cy="22" r="16" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round"/>
                 </svg><div class="ring-label" style="color:${color}">${c.match}%</div></div></td>
             <td><span class="badge ${bc}">${bt}</span></td>
@@ -99,7 +99,7 @@ function openDrawer(c) {
     document.getElementById('cd-email').textContent  = c.email;
     document.getElementById('cd-applied-for').textContent = 'Applied for: ' + (roleLabels[c.role]||c.role);
 
-    const color = c.match >= 90 ? '#2ECC71' : c.match >= 70 ? '#F1C40F' : '#EF4444';
+    const color = c.match >= 90 ? '#00D466' : c.match >= 70 ? '#FFD700' : '#FF4444';
     const circ  = 2 * Math.PI * 54;
     const off   = circ * (1 - c.match / 100);
     document.getElementById('cd-score-circle').setAttribute('stroke', color);

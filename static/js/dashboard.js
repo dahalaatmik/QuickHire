@@ -56,7 +56,7 @@ function setupUpload() {
     if (browseBtn)  browseBtn.addEventListener('click', () => fileInput && fileInput.click());
     if (dropZone) {
         dropZone.addEventListener('click', () => fileInput && fileInput.click());
-        dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.style.borderColor='#45A29E'; dropZone.style.background='rgba(102,252,241,0.1)'; });
+        dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.style.borderColor='#00D466'; dropZone.style.background='rgba(0,212,102,0.1)'; });
         dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.style.borderColor=''; dropZone.style.background=''; });
         dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor=''; dropZone.style.background=''; if (e.dataTransfer.files.length) startUpload(); });
     }
@@ -94,7 +94,7 @@ function renderCandidates(filter) {
     if (filter === 'rejected')    list = list.filter(c => c.status === 'rejected');
 
     tbody.innerHTML = list.map(c => {
-        const color = c.matchScore >= 90 ? '#2ECC71' : c.matchScore >= 70 ? '#F1C40F' : '#EF4444';
+        const color = c.matchScore >= 90 ? '#00D466' : c.matchScore >= 70 ? '#FFD700' : '#FF4444';
         const circ  = 2 * Math.PI * 16;
         const off   = circ * (1 - c.matchScore / 100);
         const bt    = c.status === 'shortlisted' ? 'Shortlisted' : c.status === 'rejected' ? 'Rejected' : 'Pending';
@@ -110,7 +110,7 @@ function renderCandidates(filter) {
             <td>${c.skills.slice(0,3).map(s=>`<span class="pill-tag">${s}</span>`).join('')}</td>
             <td><div class="mini-ring">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">
-                    <circle cx="22" cy="22" r="16" fill="none" stroke="#1F2833" stroke-width="4"/>
+                    <circle cx="22" cy="22" r="16" fill="none" stroke="#2A2A2A" stroke-width="4"/>
                     <circle cx="22" cy="22" r="16" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round"/>
                 </svg><div class="ring-label" style="color:${color}">${c.matchScore}%</div></div></td>
             <td><span class="badge ${bc}">${bt}</span></td>
@@ -149,7 +149,7 @@ function openDrawer(candidate) {
     document.getElementById('candidate-drawer').classList.add('active');
     document.getElementById('drawer-candidate-name').textContent = candidate.name;
     document.getElementById('drawer-email').textContent = candidate.email;
-    const color = candidate.matchScore >= 90 ? '#2ECC71' : candidate.matchScore >= 70 ? '#F1C40F' : '#EF4444';
+    const color = candidate.matchScore >= 90 ? '#00D466' : candidate.matchScore >= 70 ? '#FFD700' : '#FF4444';
     const circ  = 2 * Math.PI * 54;
     const off   = circ * (1 - candidate.matchScore / 100);
     document.getElementById('drawer-score-circle').setAttribute('stroke', color);
