@@ -676,13 +676,17 @@ a:hover {
 }
 
 .auth-card {
-    background: rgba(31, 40, 51, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(102, 252, 241, 0.2);
+    background: radial-gradient(circle at top left, rgba(0, 212, 102, 0.12), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(0, 168, 82, 0.18), transparent 55%),
+                rgba(16, 22, 30, 0.92);
+    backdrop-filter: blur(26px);
+    border: 1px solid rgba(102, 252, 241, 0.25);
     border-radius: clamp(12px, 2vw, 16px);
     padding: clamp(var(--spacing-lg), 3vw, var(--spacing-2xl));
     width: min(95%, 600px);
-    box-shadow: var(--shadow-xl);
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.85),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
     position: relative;
     max-height: 95vh;
     overflow-y: auto;
@@ -690,6 +694,9 @@ a:hover {
 
 .register-card {
     width: min(95%, 800px);
+    background: radial-gradient(circle at top right, rgba(0, 212, 102, 0.16), transparent 55%),
+                radial-gradient(circle at bottom left, rgba(0, 168, 82, 0.22), transparent 55%),
+                rgba(16, 22, 30, 0.96);
 }
 
 @media (min-width: 1024px) {
