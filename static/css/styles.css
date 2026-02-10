@@ -232,7 +232,7 @@ a:hover {
 .btn-primary-nav:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 252, 241, 0.4);
-    color: #000000;
+    color: #ffffff;
     filter: brightness(1.1);
 }
 
@@ -378,7 +378,7 @@ a:hover {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 30px rgba(102, 252, 241, 0.6);
-    color: #000000;
+    color: #ffffff;
     filter: brightness(1.1);
 }
 
@@ -444,9 +444,9 @@ a:hover {
 
 .mockup-container {
     width: 100%;
-    max-width: 800px;
-    margin-left: -50px;
-    margin-bottom: -30px;
+    max-width: 1100px;
+    margin-left: -140px;
+    margin-bottom: -100px;
 }
 
 .feature-image {
@@ -459,7 +459,9 @@ a:hover {
 
 .features-scroll {
     flex: 1;
-    padding: var(--spacing-lg);
+    /* Slightly pull copy column closer to mockup so endings like
+       “at a glance.” visually align with the card edge */
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
 }
 
 .feature-block {
@@ -774,6 +776,17 @@ a:hover {
 
 .auth-brand:hover {
     color: var(--color-primary);
+}
+
+/* Mobile tweaks for auth/register logo & card */
+@media (max-width: 640px) {
+    .auth-brand {
+        position: fixed;
+        top: var(--spacing-md);
+        left: var(--spacing-md);
+        font-size: var(--font-size-sm);
+        letter-spacing: 1px;
+    }
 }
 
 .auth-form {
@@ -1361,7 +1374,7 @@ a:hover {
 
 .action-btn:hover {
     background-color: var(--color-primary);
-    color: var(--color-canvas);
+    color: #ffffff;
 }
 
 /* Drawer */
@@ -1751,7 +1764,7 @@ a:hover {
     
     .auth-card {
         width: 95%;
-        padding: var(--spacing-xl);
+        padding: var(--spacing-lg);
     }
 }
 
