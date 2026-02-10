@@ -1,32 +1,17 @@
-/* ========================================
-   QuickHire - Global Styles
-   Dark Mode Professional SaaS Theme
-   ======================================== */
+/* QuickHire - Global Styles */
 
-/* ========================================
-   CSS Variables - Color Palette
-   ======================================== */
 :root {
-    /* Backgrounds */
     --color-canvas: #000000;
     --color-surface: #1A1A1A;
     --color-elevated: #2A2A2A;
-
-    /* Primary Accents */
     --color-primary: #00D466;
     --color-secondary: #00A852;
-
-    /* Functional Colors */
     --color-success: #00D466;
     --color-warning: #FFD700;
     --color-danger: #FF4444;
-
-    /* Typography */
     --color-text-high: #FFFFFF;
     --color-text-low: #CCCCCC;
     --color-text-disabled: #888888;
-
-    /* Spacing - Dynamic */
     --spacing-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
     --spacing-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
     --spacing-md: clamp(0.75rem, 0.6rem + 0.75vw, 1.25rem);
@@ -34,34 +19,26 @@
     --spacing-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
     --spacing-2xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
     --spacing-3xl: clamp(3rem, 2rem + 5vw, 6rem);
-
-    /* Typography - Dynamic/Fluid sizing */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);     /* 12-14px */
-    --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);        /* 14-16px */
-    --font-size-base: clamp(1rem, 0.85rem + 0.75vw, 1.25rem);      /* 16-20px */
-    --font-size-lg: clamp(1.125rem, 0.95rem + 0.85vw, 1.375rem);   /* 18-22px */
-    --font-size-xl: clamp(1.375rem, 1.1rem + 1.35vw, 1.625rem);    /* 22-26px */
-    --font-size-2xl: clamp(1.75rem, 1.3rem + 2.25vw, 2rem);        /* 28-32px */
-    --font-size-3xl: clamp(2.25rem, 1.5rem + 3.75vw, 2.5rem);      /* 36-40px */
-    --font-size-4xl: clamp(2.5rem, 1.5rem + 5vw, 3rem);             /* 40-48px */
-    --font-size-5xl: clamp(3rem, 1.5rem + 7.5vw, 4rem);             /* 48-64px */
-
-    /* Shadows */
+    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+    --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+    --font-size-base: clamp(1rem, 0.85rem + 0.75vw, 1.25rem);
+    --font-size-lg: clamp(1.125rem, 0.95rem + 0.85vw, 1.375rem);
+    --font-size-xl: clamp(1.375rem, 1.1rem + 1.35vw, 1.625rem);
+    --font-size-2xl: clamp(1.75rem, 1.3rem + 2.25vw, 2rem);
+    --font-size-3xl: clamp(2.25rem, 1.5rem + 3.75vw, 2.5rem);
+    --font-size-4xl: clamp(2.5rem, 1.5rem + 5vw, 3rem);
+    --font-size-5xl: clamp(3rem, 1.5rem + 7.5vw, 4rem);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
-
-    /* Transitions */
     --transition-fast: 150ms ease;
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 }
 
-/* ========================================
-   Global Resets & Base Styles
-   ======================================== */
+/* Resets */
 * {
     margin: 0;
     padding: 0;
@@ -71,7 +48,6 @@
 html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
-    /* Fluid base font size for dynamic scaling */
     font-size: clamp(14px, 0.5vw + 13px, 20px);
 }
 
@@ -86,7 +62,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Responsive images and media */
 img,
 video,
 iframe,
@@ -96,7 +71,6 @@ svg {
     display: block;
 }
 
-/* Prevent text overflow */
 h1, h2, h3, h4, h5, h6, p {
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -117,20 +91,14 @@ a:hover {
     color: var(--color-secondary);
 }
 
-/* ========================================
-   Container & Layout Utilities
-   ======================================== */
+/* Layout */
 .container {
     width: min(95%, 1400px);
     margin-inline: auto;
     padding-inline: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
 }
 
-/* ========================================
-   LANDING PAGE STYLES
-   ======================================== */
-
-/* Navigation Bar - Kinso Style */
+/* Navigation */
 .navbar {
     position: fixed;
     top: 0;
@@ -236,7 +204,7 @@ a:hover {
     filter: brightness(1.1);
 }
 
-/* Hero Section */
+/* Hero */
 .hero {
     padding: clamp(6rem, 15vh, 12rem) var(--spacing-lg) clamp(3rem, 8vh, 6rem);
     min-height: 100vh;
@@ -294,7 +262,6 @@ a:hover {
     margin-bottom: var(--spacing-3xl);
 }
 
-/* Social Proof */
 .social-proof {
     margin-top: var(--spacing-3xl);
 }
@@ -307,7 +274,6 @@ a:hover {
     font-weight: 600;
 }
 
-/* Scrolling Ticker Animation */
 .company-logos-wrapper {
     overflow: hidden;
     position: relative;
@@ -350,7 +316,6 @@ a:hover {
     opacity: 1;
 }
 
-/* Buttons */
 .btn-primary,
 .btn-secondary,
 .btn-outline,
@@ -418,7 +383,7 @@ a:hover {
     justify-content: center;
 }
 
-/* Features Section – two-column layout + card carousel */
+/* Features */
 .features-section {
     padding: clamp(4rem, 10vh, 6rem) 0;
     min-height: 85vh;
@@ -533,7 +498,6 @@ a:hover {
     max-width: 20em;
 }
 
-/* Carousel controls (prev/next buttons + dots) */
 .features-carousel-controls {
     display: flex;
     align-items: center;
@@ -686,7 +650,6 @@ a:hover {
     text-align: center;
 }
 
-/* Footer */
 .footer {
     padding: var(--spacing-2xl) 0;
     background-color: var(--color-surface);
@@ -717,9 +680,7 @@ a:hover {
     font-size: var(--font-size-sm);
 }
 
-/* ========================================
-   AUTHENTICATION PAGE STYLES
-   ======================================== */
+/* Auth */
 .auth-container {
     min-height: 100vh;
     display: flex;
@@ -738,7 +699,6 @@ a:hover {
 }
 
 .auth-card {
-    /* Clean, launch-ready card surface */
     background: linear-gradient(145deg, #151a22, #11151c);
     backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -753,7 +713,6 @@ a:hover {
 
 .register-card {
     width: min(95%, 800px);
-    /* Match auth card, slightly larger footprint only */
     background: linear-gradient(145deg, #151a22, #11151c);
 }
 
@@ -820,7 +779,6 @@ a:hover {
     letter-spacing: 2px;
 }
 
-/* Minimal brand mark on auth/register screens */
 .auth-brand {
     position: fixed;
     top: var(--spacing-lg);
@@ -838,7 +796,6 @@ a:hover {
     color: var(--color-primary);
 }
 
-/* Mobile tweaks for auth/register logo & card */
 @media (max-width: 640px) {
     .auth-brand {
         position: fixed;
@@ -1699,9 +1656,7 @@ a:hover {
     flex-wrap: wrap;
 }
 
-/* ========================================
-   Responsive Design
-   ======================================== */
+/* Responsive */
 @media (max-width: 768px) {
     .navbar {
         padding: var(--spacing-sm) 0;
