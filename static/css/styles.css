@@ -891,12 +891,12 @@ a:hover {
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     cursor: pointer;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     color: var(--color-text-low);
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 @media (min-width: 1024px) {
@@ -910,7 +910,8 @@ a:hover {
 }
 
 .checkbox-label input[type="checkbox"] {
-    width: auto;
+    width: 20px;
+    height: 20px;
     margin-top: 2px;
     cursor: pointer;
     accent-color: var(--color-primary);
