@@ -1880,8 +1880,7 @@ a:hover {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: var(--font-size-sm);
     }
-    
-    
+
     .footer .container {
         flex-direction: column;
         text-align: center;
