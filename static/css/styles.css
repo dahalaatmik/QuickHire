@@ -758,6 +758,24 @@ a:hover {
     letter-spacing: 2px;
 }
 
+/* Minimal brand mark on auth/register screens */
+.auth-brand {
+    position: fixed;
+    top: var(--spacing-lg);
+    left: var(--spacing-lg);
+    z-index: 1100;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-high);
+    text-decoration: none;
+}
+
+.auth-brand:hover {
+    color: var(--color-primary);
+}
+
 .auth-form {
     display: none;
 }
