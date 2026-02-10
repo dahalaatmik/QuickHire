@@ -232,7 +232,7 @@ a:hover {
 .btn-primary-nav:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 252, 241, 0.4);
-    color: #000000;
+    color: #ffffff;
     filter: brightness(1.1);
 }
 
@@ -378,7 +378,7 @@ a:hover {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 30px rgba(102, 252, 241, 0.6);
-    color: #000000;
+    color: #ffffff;
     filter: brightness(1.1);
 }
 
@@ -444,9 +444,9 @@ a:hover {
 
 .mockup-container {
     width: 100%;
-    max-width: 800px;
-    margin-left: -50px;
-    margin-bottom: -30px;
+    max-width: 1100px;
+    margin-left: -140px;
+    margin-bottom: -100px;
 }
 
 .feature-image {
@@ -459,7 +459,9 @@ a:hover {
 
 .features-scroll {
     flex: 1;
-    padding: var(--spacing-lg);
+    /* Slightly pull copy column closer to mockup so endings like
+       “at a glance.” visually align with the card edge */
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
 }
 
 .feature-block {
@@ -758,6 +760,35 @@ a:hover {
     letter-spacing: 2px;
 }
 
+/* Minimal brand mark on auth/register screens */
+.auth-brand {
+    position: fixed;
+    top: var(--spacing-lg);
+    left: var(--spacing-lg);
+    z-index: 1100;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-high);
+    text-decoration: none;
+}
+
+.auth-brand:hover {
+    color: var(--color-primary);
+}
+
+/* Mobile tweaks for auth/register logo & card */
+@media (max-width: 640px) {
+    .auth-brand {
+        position: fixed;
+        top: var(--spacing-md);
+        left: var(--spacing-md);
+        font-size: var(--font-size-sm);
+        letter-spacing: 1px;
+    }
+}
+
 .auth-form {
     display: none;
 }
@@ -860,12 +891,12 @@ a:hover {
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     cursor: pointer;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     color: var(--color-text-low);
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 @media (min-width: 1024px) {
@@ -879,7 +910,8 @@ a:hover {
 }
 
 .checkbox-label input[type="checkbox"] {
-    width: auto;
+    width: 20px;
+    height: 20px;
     margin-top: 2px;
     cursor: pointer;
     accent-color: var(--color-primary);
@@ -1343,7 +1375,7 @@ a:hover {
 
 .action-btn:hover {
     background-color: var(--color-primary);
-    color: var(--color-canvas);
+    color: #ffffff;
 }
 
 /* Drawer */
@@ -1733,7 +1765,7 @@ a:hover {
     
     .auth-card {
         width: 95%;
-        padding: var(--spacing-xl);
+        padding: var(--spacing-lg);
     }
 }
 

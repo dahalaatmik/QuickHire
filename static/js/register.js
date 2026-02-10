@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerFormElement) {
         registerFormElement.addEventListener('submit', (e) => {
             e.preventDefault();
+
+            // Require agreement to terms before proceeding
+            const termsCheckbox = document.getElementById('terms');
+            if (termsCheckbox && !termsCheckbox.checked) {
+                alert('Please agree to the Terms of Service and Privacy Policy before creating your account.');
+                return;
+            }
             
             // Validate passwords match
             const password = document.getElementById('password').value;
