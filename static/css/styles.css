@@ -1708,6 +1708,20 @@ a:hover {
         width: 100%;
     }
 
+    /* Mobile-friendly feature mockup layout */
+    .features-sticky {
+        position: relative;
+        height: auto;
+        min-height: 260px;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .mockup-container {
+        margin-left: 0;
+        margin-bottom: 0;
+        max-width: 100%;
+    }
+
     .features-sticky {
         position: relative;
         height: auto;
