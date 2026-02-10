@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
         feather.replace();
     }
 
+    // Features section: button carousel (prev/next + dots + wheel)
+    setupFeaturesCarousel();
+
     // Smooth in-page nav
     setupSmoothScroll();
-
-    // Scroll-linked horizontal feature animation using GSAP + ScrollTrigger
-    setupFeatureRailAnimation();
 
     console.log(
         '%c Welcome to QuickHire! ',
@@ -42,65 +42,115 @@ function setupSmoothScroll() {
     });
 }
 
-// Use GSAP ScrollTrigger to map vertical scroll to horizontal card movement.
-// As the user scrolls down through the features section, the cards slide
-// from right-to-left. On larger screens we also run a gentle auto-scroll
-// when the section is in view.
-function setupFeatureRailAnimation() {
-    const rail = document.querySelector('.features-scroll');
-    const section = document.querySelector('.features-section');
+// Features section: button carousel (prev / next + dots)
+function setupFeaturesCarousel() {
+    const track = document.querySelector('.features-track');
+    const wrap = document.querySelector('.features-carousel');
+    const dotsEl = document.querySelector('.features-dots');
+    const prevBtn = document.querySelector('.features-prev');
+    const nextBtn = document.querySelector('.features-next');
+    if (!track || !wrap || !dotsEl || !prevBtn || !nextBtn) return;
 
-    if (!rail || !section || !window.gsap || !window.ScrollTrigger) return;
+    const cards = track.querySelectorAll('.feature-card');
+    const count = cards.length;
+    if (count === 0) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    let dotButtons = [];
+    let currentIndex = 0;
+    let cachedMaxIndex = 0;
+    let isHovering = false;
 
-    const ctx = gsap.context(() => {
-        const cards = gsap.utils.toArray('.feature-block');
-        if (!cards.length) return;
+    wrap.addEventListener('mouseenter', () => {
+        isHovering = true;
+        cards[currentIndex]?.classList.add('active');
+    });
+    wrap.addEventListener('mouseleave', () => {
+        isHovering = false;
+        cards.forEach(card => card.classList.remove('active'));
+    });
 
-        // Measure overflow amount
-        const getMaxX = () => {
-            const totalWidth = rail.scrollWidth;
-            const viewportWidth = rail.clientWidth;
-            return Math.max(0, totalWidth - viewportWidth);
-        };
+    function getMaxIndex() {
+        const cardWidth = cards[0].offsetWidth;
+        const gap = parseFloat(getComputedStyle(track).gap) || 24;
+        const step = cardWidth + gap;
+        const maxScroll = Math.max(0, track.scrollWidth - wrap.clientWidth);
+        return maxScroll <= 0 ? 0 : Math.ceil(maxScroll / step);
+    }
 
-        // Core scroll-linked animation tying vertical scroll to horizontal motion
-        const horizontalTween = gsap.to(rail, {
-            x: () => -getMaxX(),
-            ease: 'none',
-            scrollTrigger: {
-                trigger: section,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: true,
-                invalidateOnRefresh: true
-            }
-        });
-
-        // Subtle auto-scroll when the section is in view (desktop only)
-        if (window.matchMedia('(min-width: 768px)').matches) {
-            const autoTween = gsap.to(rail, {
-                x: '+=80',
-                repeat: -1,
-                yoyo: true,
-                duration: 12,
-                ease: 'sine.inOut'
-            });
-
-            // Pause auto-scroll while the section is not in view
-            ScrollTrigger.create({
-                trigger: section,
-                start: 'top bottom',
-                end: 'bottom top',
-                onEnter: () => autoTween.play(),
-                onEnterBack: () => autoTween.play(),
-                onLeave: () => autoTween.pause(),
-                onLeaveBack: () => autoTween.pause()
-            });
+    function buildDots() {
+        cachedMaxIndex = getMaxIndex();
+        const numDots = cachedMaxIndex + 1;
+        dotsEl.innerHTML = '';
+        dotButtons = [];
+        for (let i = 0; i < numDots; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'features-dot' + (i === currentIndex ? ' active' : '');
+            btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            btn.addEventListener('click', () => goToSlide(i));
+            dotsEl.appendChild(btn);
+            dotButtons.push(btn);
         }
-    }, section);
+    }
 
-    // Clean up if needed (e.g., SPA navigation)
-    window.addEventListener('beforeunload', () => ctx.revert());
+    function goToSlide(index, animate = true) {
+        if (!animate) track.style.transition = 'none';
+        const cardWidth = cards[0].offsetWidth;
+        const gap = parseFloat(getComputedStyle(track).gap) || 24;
+        const step = cardWidth + gap;
+        currentIndex = Math.max(0, Math.min(index, cachedMaxIndex));
+
+        // Cap scroll so the last card aligns to the left, not stretched across
+        const lastCardLeft = (count - 1) * step;
+        const maxScroll = Math.min(lastCardLeft, Math.max(0, track.scrollWidth - wrap.clientWidth));
+        const x = currentIndex >= cachedMaxIndex ? -maxScroll : -currentIndex * step;
+        track.style.transform = `translateX(${x}px)`;
+
+        if (!animate) {
+            track.offsetHeight; // reflow
+            track.style.transition = '';
+        }
+
+        // Highlight the current card only while the mouse is over the carousel
+        cards.forEach((card, i) => card.classList.toggle('active', isHovering && i === currentIndex));
+
+        dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= cachedMaxIndex;
+    }
+
+    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+    // Scroll (mouse wheel / trackpad) on the carousel navigates cards
+    let wheelCooldown = false;
+    wrap.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaX) < 5 && Math.abs(e.deltaY) < 5) return;
+        e.preventDefault();
+        if (wheelCooldown) return;
+        wheelCooldown = true;
+        setTimeout(() => { wheelCooldown = false; }, 400);
+
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (delta > 0) {
+            goToSlide(currentIndex + 1);
+        } else {
+            goToSlide(currentIndex - 1);
+        }
+    }, { passive: false });
+
+    function init() {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                buildDots();
+                goToSlide(0, false);
+                if (window.feather) feather.replace();
+            });
+        });
+    }
+    init();
+    window.addEventListener('resize', () => {
+        buildDots();
+        goToSlide(Math.min(currentIndex, cachedMaxIndex), false);
+    });
 }
