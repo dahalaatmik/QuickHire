@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
 
     const switchToRegisterBtn = document.getElementById('switch-to-register');
     const switchToLoginBtn = document.getElementById('switch-to-login');

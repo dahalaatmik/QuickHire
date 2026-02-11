@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
 
     const registerFormElement = document.getElementById('register-form-element');
     if (!registerFormElement) return;
