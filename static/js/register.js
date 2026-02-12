@@ -29,10 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const registerBtn = document.getElementById('register-btn');
         const registerText = document.getElementById('register-text');
         const registerSpinner = document.getElementById('register-spinner');
-
-        registerText.style.display = 'none';
-        registerSpinner.style.display = 'inline-block';
-        registerBtn.disabled = true;
+        if (registerText) registerText.style.display = 'none';
+        if (registerSpinner) registerSpinner.style.display = 'inline-block';
+        if (registerBtn) { registerBtn.disabled = true; }
 
         setTimeout(() => {
             window.location.href = '../dashboard/dashboard.html';

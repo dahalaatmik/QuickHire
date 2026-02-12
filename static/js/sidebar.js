@@ -1,11 +1,4 @@
-// ============================================================
-// sidebar.js — Shared sidebar renderer for all dashboard pages
-// Include BEFORE the page-specific script.
-// Usage: <script src="./sidebar.js"></script>
-// The page must set  window.ACTIVE_NAV = 'dashboard' (etc.)
-//   before this script runs, OR this script reads it after DOM.
-// ============================================================
-
+// sidebar.js — Injects shared sidebar for dashboard pages. Include before page script.
 (function () {
     const SIDEBAR_HTML = `
     <aside class="sidebar" id="sidebar">

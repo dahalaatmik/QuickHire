@@ -1,10 +1,16 @@
-// jobs.js
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
     renderJobs();
     setupSearch();
     setupNewJobModal();
 });
+
+function escapeHtml(str) {
+    if (str == null) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+}
 
 const jobsData = [
     { id:1,  title:'Senior Backend Developer',   dept:'eng',     location:'Remote',          candidates:24, posted:'Jan 20, 2026', status:'open',   salary:'$130k–$180k' },
@@ -40,10 +46,10 @@ function renderJobs(filter) {
         const statusBadge = j.status === 'open' ? 'badge-open Open' : j.status === 'closed' ? 'badge-closed Closed' : 'badge-pending Draft';
         const [bc, bt] = statusBadge.split(' ');
         return `<tr data-id="${j.id}">
-            <td><div style="color:var(--color-text-high);font-weight:600;font-size:var(--font-size-sm);">${j.title}</div>
-                 <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-top:2px;">${j.salary}</div></td>
-            <td>${deptLabel[j.dept] || j.dept}</td>
-            <td>${j.location}</td>
+            <td><div style="color:var(--color-text-high);font-weight:600;font-size:var(--font-size-sm);">${escapeHtml(j.title)}</div>
+                 <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-top:2px;">${escapeHtml(j.salary)}</div></td>
+            <td>${escapeHtml(deptLabel[j.dept] || j.dept)}</td>
+            <td>${escapeHtml(j.location)}</td>
             <td>
                 <div style="display:flex;align-items:center;gap:8px;">
                     <span style="font-weight:600;color:var(--color-text-high);">${j.candidates}</span>
@@ -73,60 +79,66 @@ function renderJobs(filter) {
 }
 
 function setupSearch() {
-    const searchInput  = document.getElementById('jobs-search');
-    const deptFilter   = document.getElementById('jobs-dept-filter');
+    const searchInput = document.getElementById('jobs-search');
+    const deptFilter = document.getElementById('jobs-dept-filter');
     const statusFilter = document.getElementById('jobs-status-filter');
 
     function applyFilters() {
         renderJobs({
-            search: searchInput.value,
-            dept: deptFilter.value,
-            status: statusFilter.value
+            search: searchInput ? searchInput.value : '',
+            dept: deptFilter ? deptFilter.value : 'all',
+            status: statusFilter ? statusFilter.value : 'all'
         });
     }
 
-    searchInput.addEventListener('input', applyFilters);
-    deptFilter.addEventListener('change', applyFilters);
-    statusFilter.addEventListener('change', applyFilters);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (deptFilter) deptFilter.addEventListener('change', applyFilters);
+    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
 }
 
 function setupNewJobModal() {
-    const modal    = document.getElementById('new-job-modal');
-    const openBtn  = document.getElementById('new-job-btn');
+    const modal = document.getElementById('new-job-modal');
+    const openBtn = document.getElementById('new-job-btn');
     const backdrop = document.getElementById('njm-backdrop');
     const closeBtn = document.getElementById('njm-close');
-    const cancel   = document.getElementById('njm-cancel');
-    const submit   = document.getElementById('njm-submit');
+    const cancel = document.getElementById('njm-cancel');
+    const submit = document.getElementById('njm-submit');
+    if (!modal || !openBtn) return;
+    openBtn.addEventListener('click', () => { modal.classList.add('active'); if (window.feather) feather.replace(); });
+    if (backdrop) backdrop.addEventListener('click', () => modal.classList.remove('active'));
+    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    if (cancel) cancel.addEventListener('click', () => modal.classList.remove('active'));
 
-    openBtn.addEventListener('click', () => { modal.classList.add('active'); feather.replace(); });
-    backdrop.addEventListener('click', () => modal.classList.remove('active'));
-    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-    cancel.addEventListener('click',  () => modal.classList.remove('active'));
-
-    submit.addEventListener('click', () => {
-        const title = document.getElementById('njm-title').value.trim();
+    if (submit) submit.addEventListener('click', () => {
+        const titleEl = document.getElementById('njm-title');
+        const deptEl = document.getElementById('njm-dept');
+        const locationEl = document.getElementById('njm-location');
+        const salMinEl = document.getElementById('njm-sal-min');
+        const salMaxEl = document.getElementById('njm-sal-max');
+        const title = titleEl ? titleEl.value.trim() : '';
         if (!title) { toast('Please enter a job title', 'error'); return; }
-        // Add to mock data
+        const newId = jobsData.length ? Math.max(...jobsData.map(j => j.id)) + 1 : 1;
         jobsData.unshift({
-            id: jobsData.length + 1,
+            id: newId,
             title: title,
-            dept: document.getElementById('njm-dept').value.toLowerCase(),
-            location: document.getElementById('njm-location').value || 'Remote',
+            dept: (deptEl && deptEl.value) ? deptEl.value.toLowerCase() : 'eng',
+            location: (locationEl && locationEl.value) ? locationEl.value : 'Remote',
             candidates: 0,
-            posted: new Date().toLocaleDateString('en-AU', { month:'short', day:'numeric', year:'numeric' }),
+            posted: new Date().toLocaleDateString('en-AU', { month: 'short', day: 'numeric', year: 'numeric' }),
             status: 'draft',
-            salary: '$' + (document.getElementById('njm-sal-min').value || '0') + 'k–$' + (document.getElementById('njm-sal-max').value || '0') + 'k'
+            salary: '$' + (salMinEl ? salMinEl.value : '0') + 'k–$' + (salMaxEl ? salMaxEl.value : '0') + 'k'
         });
         modal.classList.remove('active');
         renderJobs();
         toast('Job posting created: ' + title);
-        // Reset form
-        document.getElementById('njm-title').value = '';
-        document.getElementById('njm-location').value = '';
-        document.getElementById('njm-sal-min').value = '';
-        document.getElementById('njm-sal-max').value = '';
-        document.getElementById('njm-desc').value = '';
-        document.getElementById('njm-skills').value = '';
+        if (titleEl) titleEl.value = '';
+        if (locationEl) locationEl.value = '';
+        if (salMinEl) salMinEl.value = '';
+        if (salMaxEl) salMaxEl.value = '';
+        const descEl = document.getElementById('njm-desc');
+        const skillsEl = document.getElementById('njm-skills');
+        if (descEl) descEl.value = '';
+        if (skillsEl) skillsEl.value = '';
     });
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('active'); });

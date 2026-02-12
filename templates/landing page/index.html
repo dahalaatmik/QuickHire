@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#070809">
+    <meta name="description" content="QuickHire - AI-native hiring. Cuts hiring time by 80%. Bias-free. Instant. Precise.">
     <title>QuickHire - Scale Your Team, Not Your Workload</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,9 +13,14 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 <body>
-    <nav class="navbar">
+    <nav class="navbar" role="navigation" aria-label="Main">
         <div class="container navbar-content">
-            <div class="nav-left">
+            <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            <div class="nav-left" id="nav-menu">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#team" class="nav-link">Team</a>
             </div>
@@ -30,43 +37,94 @@
     </nav>
 
     <section class="hero">
-        <div class="container">
+        <div class="container hero-container">
             <div class="hero-content">
                 <h1 class="hero-headline">We help Businesses scale, Quicker.</h1>
                 <p class="hero-subheadline">
                     <span class="hero-subheadline-main">Cuts hiring time by 80%.</span>
                     <span class="hero-subheadline-support">Bias-free. Instant. Precise.</span>
                 </p>
-                <div class="hero-cta">
-                    <a href="register.html" class="btn-primary">Start Screening Free</a>
-                    <button class="btn-outline">Watch Demo</button>
-                </div>
-                <div class="social-proof">
-                    <p class="social-proof-header"><span class="social-proof-header-long">TRUSTED BY FORWARD-THINKING TEAMS AT:</span><span class="social-proof-header-short">TRUSTED BY</span></p>
-                    <div class="company-logos-wrapper">
-                        <div class="company-logos-scroll">
-                            <span class="company-logo">TechFlow</span>
-                            <span class="company-logo">ScaleUp</span>
-                            <span class="company-logo">FinCorp</span>
-                            <span class="company-logo">DataSystems</span>
-                            <span class="company-logo">InnovateLabs</span>
-                            <span class="company-logo">CloudNine</span>
-                            <span class="company-logo">ByteForge</span>
-                            <span class="company-logo">NexGen</span>
-                            <!-- Duplicated for seamless scroll loop -->
-                            <span class="company-logo">TechFlow</span>
-                            <span class="company-logo">ScaleUp</span>
-                            <span class="company-logo">FinCorp</span>
-                            <span class="company-logo">DataSystems</span>
-                            <span class="company-logo">InnovateLabs</span>
-                            <span class="company-logo">CloudNine</span>
-                            <span class="company-logo">ByteForge</span>
-                            <span class="company-logo">NexGen</span>
+            </div>
+            <div class="hero-proof">
+                <div class="dashboard-mockup">
+                    <div class="mockup-sidebar">
+                        <div class="mockup-logo">QH</div>
+                        <div class="mockup-nav-item"></div>
+                        <div class="mockup-nav-item"></div>
+                        <div class="mockup-nav-item active"></div>
+                        <div class="mockup-user">
+                            <div class="mockup-avatar">JD</div>
+                            <div class="mockup-user-info"></div>
+                        </div>
+                    </div>
+                    <div class="mockup-main">
+                        <div class="mockup-bar"></div>
+                        <div class="mockup-cards">
+                            <div class="mockup-card"></div>
+                            <div class="mockup-card"></div>
+                            <div class="mockup-card"></div>
+                        </div>
+                        <div class="mockup-table">
+                            <div class="mockup-row"></div>
+                            <div class="mockup-row"></div>
+                            <div class="mockup-row"></div>
+                            <div class="mockup-row"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <hr class="section-divider" aria-hidden="true">
+        <div class="hero-social-proof-center">
+            <p class="social-proof-header">Integrations</p>
+            <div class="integrations-scroll-wrapper">
+                <div class="integrations-scroll-track" aria-hidden="true">
+                    <div class="integrations-set">
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/seek/icon/SEK.AX-d232c935.png" alt="Seek" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Jora/logo/image.svg" alt="Jora" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Indeed/Logo/Indeed_Logo_0.svg" alt="Indeed" width="100" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/LinkedIn/icon/InBug-White.png" alt="LinkedIn" width="28" height="28" loading="lazy">
+                        </span>
+                    </div>
+                    <div class="integrations-set" aria-hidden="true">
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/seek/icon/SEK.AX-d232c935.png" alt="Seek" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Jora/logo/image.svg" alt="Jora" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Indeed/Logo/Indeed_Logo_0.svg" alt="Indeed" width="100" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/LinkedIn/icon/InBug-White.png" alt="LinkedIn" width="28" height="28" loading="lazy">
+                        </span>
+                    </div>
+                    <div class="integrations-set" aria-hidden="true">
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/seek/icon/SEK.AX-d232c935.png" alt="Seek" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Jora/logo/image.svg" alt="Jora" width="80" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/Indeed/Logo/Indeed_Logo_0.svg" alt="Indeed" width="100" height="28" loading="lazy">
+                        </span>
+                        <span class="company-logo company-logo-integration">
+                            <img src="../../static/assets/external-platform-logos/LinkedIn/icon/InBug-White.png" alt="LinkedIn" width="28" height="28" loading="lazy">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="section-divider" aria-hidden="true">
     </section>
 
     <section id="features" class="features-section">
@@ -110,15 +168,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="features-carousel-controls">
-                    <button type="button" class="features-nav features-prev" aria-label="Previous"><i data-feather="chevron-left"></i></button>
-                    <div class="features-dots" role="tablist"></div>
-                    <button type="button" class="features-nav features-next" aria-label="Next"><i data-feather="chevron-right"></i></button>
-                </div>
             </div>
         </div>
     </section>
-
     <section id="team" class="team-section">
         <div class="container">
             <p class="team-label">FOUNDING TEAM</p>
@@ -147,7 +199,6 @@
             </div>
         </div>
     </section>
-
     <footer class="footer">
         <div class="container">
             <p class="footer-copyright">&copy; 2026 QuickHire Inc. All rights reserved.</p>

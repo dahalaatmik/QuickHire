@@ -1,6 +1,5 @@
-// analytics.js
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
     renderBarChart();
     renderDeptBreakdown();
     renderFunnel();
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupExport();
 });
 
-// ─── Bar Chart: Applications per day (last 30 days, weekly buckets) ─
 function renderBarChart() {
     const el = document.getElementById('app-chart');
     if (!el) return;
@@ -30,7 +28,6 @@ function renderBarChart() {
     }).join('');
 }
 
-// ─── Department Breakdown ───────────────────────────────────
 function renderDeptBreakdown() {
     const el = document.getElementById('dept-breakdown');
     if (!el) return;
@@ -56,7 +53,6 @@ function renderDeptBreakdown() {
     }).join('');
 }
 
-// ─── Hiring Funnel ──────────────────────────────────────────
 function renderFunnel() {
     const el = document.getElementById('funnel-chart');
     if (!el) return;
@@ -106,7 +102,6 @@ function renderSkillsDemand() {
         `).join('') + '</div>';
 }
 
-// ─── Recent Hires Table ─────────────────────────────────────
 function renderRecentHires() {
     const tbody = document.getElementById('hires-tbody');
     if (!tbody) return;
@@ -141,10 +136,8 @@ function renderRecentHires() {
 }
 
 function setupExport() {
-    document.getElementById('export-btn').addEventListener('click', () => {
-        toast('Analytics report exported as CSV');
-    });
-    document.getElementById('time-range').addEventListener('change', () => {
-        toast('Refreshing data for selected range…');
-    });
+    const exportBtn = document.getElementById('export-btn');
+    const timeRange = document.getElementById('time-range');
+    if (exportBtn) exportBtn.addEventListener('click', () => toast('Analytics report exported as CSV'));
+    if (timeRange) timeRange.addEventListener('change', () => toast('Refreshing data for selected range…'));
 }

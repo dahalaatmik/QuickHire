@@ -1,5 +1,3 @@
-// toast.js — lightweight toast notification
-// Usage: toast('message')  or  toast('message', 'success' | 'error')
 (function () {
     window.toast = function (msg, type) {
         type = type || 'success';

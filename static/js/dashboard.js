@@ -1,6 +1,5 @@
-// dashboard.js
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
     renderActivity();
     renderCandidates();
     setupUpload();
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
-// ─── Mock Data ───────────────────────────────────────────────
 const candidatesData = [
     { id:1, name:'Sarah Chen',       email:'sarah.chen@email.com',       experience:7, skills:['React','TypeScript','Node.js','AWS'],          matchScore:95, summary:['7+ yrs full-stack with React & TypeScript','Led migration to serverless — 50+ enterprise clients','Strong AWS cloud architecture background'], status:'pending' },
     { id:2, name:'Marcus Williams', email:'marcus.w@email.com',         experience:5, skills:['JavaScript','Vue.js','Docker','GraphQL'],      matchScore:88, summary:['Solid full-stack JS with modern frameworks','Built & maintained high-traffic SaaS apps','Proficient in containerization & CI/CD'], status:'pending' },
@@ -18,6 +16,12 @@ const candidatesData = [
     { id:5, name:'Emily Rodriguez', email:'emily.r@email.com',         experience:6, skills:['Go','Terraform','AWS','Prometheus'],           matchScore:91, summary:['Expert in Go & infrastructure-as-code','Designed systems handling 1M+ req/day','Championed observability practices'], status:'pending' },
     { id:6, name:"James O'Connor", email:'james.oconnor@email.com',   experience:8, skills:['C#','.NET Core','Azure','SQL Server'],         matchScore:85, summary:['Extensive Microsoft stack & Azure migration','Delivered 20+ enterprise apps','Focus on clean architecture & SOLID'], status:'pending' }
 ];
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
 
 const activityFeed = [
     { icon:'user-check',  text:'Sarah Chen shortlisted for Senior Developer',   time:'2 min ago' },
@@ -30,25 +34,26 @@ const activityFeed = [
 
 let selectedCandidate = null;
 
-// ─── Activity Feed ───────────────────────────────────────────
 function renderActivity() {
     const el = document.getElementById('activity-list');
     if (!el) return;
-    el.innerHTML = activityFeed.map(item => `
+    el.innerHTML = activityFeed.map(item => {
+        const safeText = escapeHtml(item.text);
+        return `
         <div style="display:flex;align-items:flex-start;gap:var(--spacing-md);padding:var(--spacing-md) var(--spacing-lg);border-bottom:1px solid rgba(255,255,255,0.04);">
             <div style="width:32px;height:32px;border-radius:6px;background:rgba(102,252,241,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--color-primary);margin-top:2px;">
                 <i data-feather="${item.icon}" style="width:15px;height:15px;"></i>
             </div>
             <div style="min-width:0;">
-                <p style="font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.5;">${item.text}</p>
-                <p style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-top:2px;">${item.time}</p>
+                <p style="font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.5;">${safeText}</p>
+                <p style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-top:2px;">${escapeHtml(item.time)}</p>
             </div>
         </div>
-    `).join('');
-    feather.replace();
+    `;
+    }).join('');
+    if (window.feather) feather.replace();
 }
 
-// ─── Upload Flow ─────────────────────────────────────────────
 function setupUpload() {
     const dropZone  = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
@@ -64,18 +69,25 @@ function setupUpload() {
 }
 
 function startUpload() {
-    document.getElementById('drop-zone').style.display = 'none';
-    document.getElementById('processing-state').style.display = 'block';
+    const dropZone = document.getElementById('drop-zone');
+    const processingState = document.getElementById('processing-state');
+    const progressFill = document.getElementById('progress-fill');
+    const progressPercent = document.getElementById('progress-percent');
+    const uploadView = document.getElementById('upload-view');
+    const resultsSection = document.getElementById('results-section');
+    if (!dropZone || !processingState) return;
+    dropZone.style.display = 'none';
+    processingState.style.display = 'block';
     let p = 0;
     const iv = setInterval(() => {
         p += 5;
-        document.getElementById('progress-fill').style.width = p + '%';
-        document.getElementById('progress-percent').textContent = p + '%';
+        if (progressFill) progressFill.style.width = p + '%';
+        if (progressPercent) progressPercent.textContent = p + '%';
         if (p >= 100) {
             clearInterval(iv);
             setTimeout(() => {
-                document.getElementById('upload-view').style.display = 'none';
-                document.getElementById('results-section').style.display = 'block';
+                if (uploadView) uploadView.style.display = 'none';
+                if (resultsSection) resultsSection.style.display = 'block';
                 renderCandidates();
                 toast('AI screening complete — 6 candidates ranked', 'success');
             }, 400);
@@ -83,7 +95,6 @@ function startUpload() {
     }, 100);
 }
 
-// ─── Candidate Table ─────────────────────────────────────────
 function renderCandidates(filter) {
     filter = filter || 'all';
     const tbody = document.getElementById('candidates-tbody');
@@ -95,19 +106,19 @@ function renderCandidates(filter) {
 
     tbody.innerHTML = list.map(c => {
         const color = c.matchScore >= 90 ? '#00D466' : c.matchScore >= 70 ? '#FFD700' : '#FF4444';
-        const circ  = 2 * Math.PI * 16;
-        const off   = circ * (1 - c.matchScore / 100);
-        const bt    = c.status === 'shortlisted' ? 'Shortlisted' : c.status === 'rejected' ? 'Rejected' : 'Pending';
-        const bc    = c.status === 'shortlisted' ? 'badge-hired' : c.status === 'rejected' ? 'badge-closed' : 'badge-pending';
+        const circ = 2 * Math.PI * 16;
+        const off = circ * (1 - c.matchScore / 100);
+        const bt = c.status === 'shortlisted' ? 'Shortlisted' : c.status === 'rejected' ? 'Rejected' : 'Pending';
+        const bc = c.status === 'shortlisted' ? 'badge-hired' : c.status === 'rejected' ? 'badge-closed' : 'badge-pending';
         const initials = c.name.split(' ').map(n => n[0]).join('');
         return `<tr data-id="${c.id}">
             <td style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar-sm">${initials}</div>
-                <div><div style="color:var(--color-text-high);font-weight:600;font-size:var(--font-size-sm);">${c.name}</div>
-                     <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);">${c.email}</div></div>
+                <div class="avatar-sm">${escapeHtml(initials)}</div>
+                <div><div style="color:var(--color-text-high);font-weight:600;font-size:var(--font-size-sm);">${escapeHtml(c.name)}</div>
+                     <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);">${escapeHtml(c.email)}</div></div>
             </td>
             <td>${c.experience} yrs</td>
-            <td>${c.skills.slice(0,3).map(s=>`<span class="pill-tag">${s}</span>`).join('')}</td>
+            <td>${c.skills.slice(0,3).map(s=>`<span class="pill-tag">${escapeHtml(s)}</span>`).join('')}</td>
             <td><div class="mini-ring">
                 <svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">
                     <circle cx="22" cy="22" r="16" fill="none" stroke="#2A2A2A" stroke-width="4"/>
@@ -134,34 +145,46 @@ function setupFilters() {
     });
 }
 
-// ─── Drawer ──────────────────────────────────────────────────
 function setupDrawer() {
-    document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
-    document.getElementById('drawer-close').addEventListener('click', closeDrawer);
-    document.getElementById('reject-btn').addEventListener('click', handleReject);
-    document.getElementById('shortlist-btn').addEventListener('click', handleShortlist);
-    document.getElementById('schedule-btn').addEventListener('click', openScheduleModal);
-    document.addEventListener('keydown', e => { if (e.key==='Escape') { closeDrawer(); closeScheduleModal(); } });
+    const backdrop = document.getElementById('drawer-backdrop');
+    const closeBtn = document.getElementById('drawer-close');
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    const rejectBtn = document.getElementById('reject-btn');
+    const shortlistBtn = document.getElementById('shortlist-btn');
+    const scheduleBtn = document.getElementById('schedule-btn');
+    if (rejectBtn) rejectBtn.addEventListener('click', handleReject);
+    if (shortlistBtn) shortlistBtn.addEventListener('click', handleShortlist);
+    if (scheduleBtn) scheduleBtn.addEventListener('click', openScheduleModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); closeScheduleModal(); } });
 }
 
 function openDrawer(candidate) {
     selectedCandidate = candidate;
-    document.getElementById('candidate-drawer').classList.add('active');
-    document.getElementById('drawer-candidate-name').textContent = candidate.name;
-    document.getElementById('drawer-email').textContent = candidate.email;
+    const drawer = document.getElementById('candidate-drawer');
+    if (!drawer) return;
+    drawer.classList.add('active');
+    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    setText('drawer-candidate-name', candidate.name);
+    setText('drawer-email', candidate.email);
     const color = candidate.matchScore >= 90 ? '#00D466' : candidate.matchScore >= 70 ? '#FFD700' : '#FF4444';
-    const circ  = 2 * Math.PI * 54;
-    const off   = circ * (1 - candidate.matchScore / 100);
-    document.getElementById('drawer-score-circle').setAttribute('stroke', color);
-    document.getElementById('drawer-score-circle').setAttribute('stroke-dashoffset', off);
-    document.getElementById('drawer-score-text').textContent = candidate.matchScore + '%';
-    document.getElementById('drawer-score-text').style.color = color;
-    document.getElementById('drawer-ai-summary').innerHTML = candidate.summary.map(s => `<li>${s}</li>`).join('');
-    document.getElementById('drawer-skills').innerHTML = candidate.skills.map(s => `<span class="pill-tag">${s}</span>`).join('');
-    feather.replace();
+    const circ = 2 * Math.PI * 54;
+    const off = circ * (1 - candidate.matchScore / 100);
+    const scoreCircle = document.getElementById('drawer-score-circle');
+    const scoreText = document.getElementById('drawer-score-text');
+    if (scoreCircle) { scoreCircle.setAttribute('stroke', color); scoreCircle.setAttribute('stroke-dashoffset', off); }
+    if (scoreText) { scoreText.textContent = candidate.matchScore + '%'; scoreText.style.color = color; }
+    const summaryEl = document.getElementById('drawer-ai-summary');
+    const skillsEl = document.getElementById('drawer-skills');
+    if (summaryEl) summaryEl.innerHTML = candidate.summary.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    if (skillsEl) skillsEl.innerHTML = candidate.skills.map(s => `<span class="pill-tag">${escapeHtml(s)}</span>`).join('');
+    if (window.feather) feather.replace();
 }
 
-function closeDrawer() { document.getElementById('candidate-drawer').classList.remove('active'); }
+function closeDrawer() {
+    const drawer = document.getElementById('candidate-drawer');
+    if (drawer) drawer.classList.remove('active');
+}
 
 function handleReject() {
     if (!selectedCandidate) return;
@@ -179,24 +202,35 @@ function handleShortlist() {
     toast(selectedCandidate.name + ' has been shortlisted');
 }
 
-// ─── Schedule Modal ──────────────────────────────────────────
 function setupModal() {
-    document.getElementById('modal-backdrop').addEventListener('click', closeScheduleModal);
-    document.getElementById('modal-close').addEventListener('click', closeScheduleModal);
-    document.getElementById('modal-cancel').addEventListener('click', closeScheduleModal);
-    document.getElementById('send-invitation').addEventListener('click', sendInvitation);
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalClose = document.getElementById('modal-close');
+    const modalCancel = document.getElementById('modal-cancel');
+    const sendBtn = document.getElementById('send-invitation');
+    if (modalBackdrop) modalBackdrop.addEventListener('click', closeScheduleModal);
+    if (modalClose) modalClose.addEventListener('click', closeScheduleModal);
+    if (modalCancel) modalCancel.addEventListener('click', closeScheduleModal);
+    if (sendBtn) sendBtn.addEventListener('click', sendInvitation);
 }
 
 function openScheduleModal() {
     if (!selectedCandidate) return;
-    document.getElementById('schedule-modal').classList.add('active');
-    document.getElementById('candidate-email').value = selectedCandidate.email;
-    document.getElementById('email-subject').value = 'Interview Invitation — ' + selectedCandidate.name;
-    document.getElementById('email-message').value = 'Dear ' + selectedCandidate.name + ',\n\nWe were impressed by your application and would like to invite you for an interview.\n\nPlease let us know your availability for next week.\n\nBest regards,\nThe QuickHire Team';
-    feather.replace();
+    const modal = document.getElementById('schedule-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+    const emailEl = document.getElementById('candidate-email');
+    const subjectEl = document.getElementById('email-subject');
+    const messageEl = document.getElementById('email-message');
+    if (emailEl) emailEl.value = selectedCandidate.email;
+    if (subjectEl) subjectEl.value = 'Interview Invitation — ' + selectedCandidate.name;
+    if (messageEl) messageEl.value = 'Dear ' + selectedCandidate.name + ',\n\nWe were impressed by your application and would like to invite you for an interview.\n\nPlease let us know your availability for next week.\n\nBest regards,\nThe QuickHire Team';
+    if (window.feather) feather.replace();
 }
 
-function closeScheduleModal() { document.getElementById('schedule-modal').classList.remove('active'); }
+function closeScheduleModal() {
+    const modal = document.getElementById('schedule-modal');
+    if (modal) modal.classList.remove('active');
+}
 
 function sendInvitation() {
     closeScheduleModal(); closeDrawer();

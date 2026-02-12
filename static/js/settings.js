@@ -1,6 +1,5 @@
-// settings.js
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
+    if (window.feather) feather.replace();
     setupTabs();
     setupToggles();
     setupDangerZone();
@@ -13,8 +12,6 @@ function setupTabs() {
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const target = btn.dataset.tab;
-            
-            // Update active states
             tabBtns.forEach(b => b.classList.remove('active'));
             panels.forEach(p => p.classList.remove('active'));
             
@@ -26,7 +23,6 @@ function setupTabs() {
 }
 
 function setupToggles() {
-    // All toggles show toast when changed
     document.querySelectorAll('.toggle input').forEach(inp => {
         inp.addEventListener('change', e => {
             const label = e.target.closest('.settings-row').querySelector('h4').textContent;
@@ -34,20 +30,14 @@ function setupToggles() {
             toast(`${label} ${state}`);
         });
     });
-
-    // Input changes
-    document.getElementById('org-name').addEventListener('change', e => {
-        toast('Organization name updated');
-    });
-    document.getElementById('industry').addEventListener('change', e => {
-        toast('Industry updated to: ' + e.target.value);
-    });
-    document.getElementById('company-size').addEventListener('change', e => {
-        toast('Company size updated');
-    });
-    document.getElementById('match-threshold').addEventListener('change', e => {
-        toast('Match threshold set to: ' + e.target.value);
-    });
+    const orgName = document.getElementById('org-name');
+    const industry = document.getElementById('industry');
+    const companySize = document.getElementById('company-size');
+    const matchThreshold = document.getElementById('match-threshold');
+    if (orgName) orgName.addEventListener('change', () => toast('Organization name updated'));
+    if (industry) industry.addEventListener('change', e => toast('Industry updated to: ' + e.target.value));
+    if (companySize) companySize.addEventListener('change', () => toast('Company size updated'));
+    if (matchThreshold) matchThreshold.addEventListener('change', e => toast('Match threshold set to: ' + e.target.value));
 }
 
 function setupDangerZone() {

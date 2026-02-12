@@ -1,21 +1,77 @@
-// Landing Page JavaScript
 document.addEventListener('DOMContentLoaded', () => {
     if (window.feather) feather.replace();
     setupFeaturesCarousel();
     setupSmoothScroll();
+    setupMobileNav();
 });
 
+function setupMobileNav() {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.querySelector('.nav-left');
+    const body = document.body;
+    if (!toggle || !menu) return;
+
+    function openMenu() {
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Close menu');
+        menu.classList.add('nav-menu-open');
+        body.classList.add('nav-overlay-open');
+    }
+
+    function closeMenu() {
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+        menu.classList.remove('nav-menu-open');
+        body.classList.remove('nav-overlay-open');
+    }
+
+    function isOpen() {
+        return menu.classList.contains('nav-menu-open');
+    }
+
+    toggle.addEventListener('click', () => {
+        if (isOpen()) closeMenu();
+        else openMenu();
+    });
+
+    menu.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => closeMenu());
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.matchMedia('(min-width: 769px)').matches && isOpen()) closeMenu();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen()) closeMenu();
+    });
+}
+
 function setupSmoothScroll() {
+    const scrollPadding = 80;
+    const duration = 700;
+    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href !== '#' && href.length > 1) {
                 e.preventDefault();
                 const target = document.querySelector(href);
-                if (target) {
-                    const offset = target.getBoundingClientRect().top + window.pageYOffset - 80;
-                    window.scrollTo({ top: offset, behavior: 'smooth' });
+                if (!target) return;
+                const startY = window.scrollY ?? window.pageYOffset;
+                const endY = target.getBoundingClientRect().top + startY - scrollPadding;
+                const distance = endY - startY;
+                const startTime = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = easeOutCubic(progress);
+                    window.scrollTo(0, startY + distance * eased);
+                    if (progress < 1) requestAnimationFrame(tick);
                 }
+                requestAnimationFrame(tick);
             }
         });
     });
@@ -28,12 +84,13 @@ function setupFeaturesCarousel() {
     const dotsEl = document.querySelector('.features-dots');
     const prevBtn = document.querySelector('.features-prev');
     const nextBtn = document.querySelector('.features-next');
-    if (!section || !track || !wrap || !dotsEl || !prevBtn || !nextBtn) return;
+    if (!section || !track || !wrap) return;
 
     const cards = track.querySelectorAll('.feature-card');
     const count = cards.length;
     if (count === 0) return;
 
+    const hasControls = dotsEl && prevBtn && nextBtn;
     const mobileQuery = window.matchMedia('(max-width: 768px)');
     function isMobile() {
         return mobileQuery.matches;
@@ -67,15 +124,15 @@ function setupFeaturesCarousel() {
     checkSectionInMiddle();
 
     function getMaxIndex() {
-        if (isMobile()) return Math.max(0, count - 1);
-        const cardWidth = cards[0].offsetWidth;
+        const cardHeight = cards[0].offsetHeight;
         const gap = parseFloat(getComputedStyle(track).gap) || 24;
-        const step = cardWidth + gap;
-        const maxScroll = Math.max(0, track.scrollWidth - wrap.clientWidth);
-        return maxScroll <= 0 ? 0 : Math.ceil(maxScroll / step);
+        const step = cardHeight + gap;
+        const maxScroll = Math.max(0, wrap.scrollHeight - wrap.clientHeight);
+        return maxScroll <= 0 ? 0 : Math.min(count - 1, Math.round(maxScroll / step));
     }
 
     function buildDots() {
+        if (!hasControls) return;
         cachedMaxIndex = getMaxIndex();
         dotsEl.innerHTML = '';
         dotButtons = [];
@@ -93,54 +150,37 @@ function setupFeaturesCarousel() {
     function goToSlide(index, animate = true) {
         currentIndex = Math.max(0, Math.min(index, cachedMaxIndex));
 
-        if (isMobile()) {
-            const card = cards[currentIndex];
-            if (card) {
-                const cardTop = card.offsetTop;
-                const cardHeight = card.offsetHeight;
-                const wrapHeight = wrap.clientHeight;
-                const maxScroll = wrap.scrollHeight - wrapHeight;
-                const top = Math.max(0, Math.min(maxScroll, cardTop - wrapHeight / 2 + cardHeight / 2));
-                wrap.scrollTo({ top, behavior: animate ? 'smooth' : 'auto' });
-            }
-            updateActiveCard();
-            dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex >= cachedMaxIndex;
-            return;
-        }
-
-        if (!animate) track.style.transition = 'none';
-        const cardWidth = cards[0].offsetWidth;
-        const gap = parseFloat(getComputedStyle(track).gap) || 24;
-        const step = cardWidth + gap;
-        const lastCardLeft = (count - 1) * step;
-        const maxScroll = Math.min(lastCardLeft, Math.max(0, track.scrollWidth - wrap.clientWidth));
-        const x = currentIndex >= cachedMaxIndex ? -maxScroll : -currentIndex * step;
-        track.style.transform = `translateX(${x}px)`;
-
-        if (!animate) {
-            track.offsetHeight;
-            track.style.transition = '';
+        const card = cards[currentIndex];
+        if (card) {
+            const cardTop = card.offsetTop;
+            const cardHeight = card.offsetHeight;
+            const wrapHeight = wrap.clientHeight;
+            const maxScroll = wrap.scrollHeight - wrapHeight;
+            const top = Math.max(0, Math.min(maxScroll, cardTop - wrapHeight / 2 + cardHeight / 2));
+            wrap.scrollTo({ top, behavior: animate ? 'smooth' : 'auto' });
         }
 
         updateActiveCard();
-        dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
-        prevBtn.disabled = currentIndex === 0;
-        nextBtn.disabled = currentIndex >= cachedMaxIndex;
+        if (hasControls) {
+            dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex >= cachedMaxIndex;
+        }
     }
 
     function updateActiveCard() {
         cards.forEach((card, i) => card.classList.toggle('active', sectionInView && i === currentIndex));
     }
 
-    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    if (hasControls) {
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    }
 
     let wheelCooldown = false;
     document.addEventListener('wheel', (e) => {
-        if (!sectionInView || isMobile()) return;
-        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (!sectionInView) return;
+        const delta = e.deltaY;
         if (Math.abs(delta) < 5) return;
         const scrollingDown = delta > 0;
         const atStart = currentIndex === 0;
@@ -154,31 +194,34 @@ function setupFeaturesCarousel() {
         goToSlide(currentIndex + (scrollingDown ? 1 : -1));
     }, { passive: false });
 
+    let scrollSyncRaf = null;
     function syncIndexFromScroll() {
-        if (!isMobile() || !cards.length) return;
-        const wrapRect = wrap.getBoundingClientRect();
-        const wrapCenterY = wrapRect.top + wrapRect.height / 2;
-        let best = 0;
-        let bestDist = Infinity;
-        cards.forEach((card, i) => {
-            const r = card.getBoundingClientRect();
-            const centerY = r.top + r.height / 2;
-            const dist = Math.abs(centerY - wrapCenterY);
-            if (dist < bestDist) {
-                bestDist = dist;
-                best = i;
+        if (!cards.length) return;
+        if (scrollSyncRaf !== null) return;
+        scrollSyncRaf = requestAnimationFrame(() => {
+            scrollSyncRaf = null;
+            const wrapRect = wrap.getBoundingClientRect();
+            const wrapCenterY = wrapRect.top + wrapRect.height / 2;
+            let best = 0;
+            let bestDist = Infinity;
+            cards.forEach((card, i) => {
+                const r = card.getBoundingClientRect();
+                const centerY = r.top + r.height / 2;
+                const dist = Math.abs(centerY - wrapCenterY);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = i;
+                }
+            });
+            if (best !== currentIndex) {
+                currentIndex = best;
+                if (hasControls) dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+                updateActiveCard();
             }
         });
-        if (best !== currentIndex) {
-            currentIndex = best;
-            dotButtons.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
-            updateActiveCard();
-        }
     }
 
-    wrap.addEventListener('scroll', () => {
-        if (isMobile()) syncIndexFromScroll();
-    }, { passive: true });
+    wrap.addEventListener('scroll', () => syncIndexFromScroll(), { passive: true });
 
     let touchStartY = 0;
     let touchGestureHandled = false;
@@ -218,13 +261,15 @@ function setupFeaturesCarousel() {
 
     function init() {
         requestAnimationFrame(() => {
-            buildDots();
+            if (hasControls) buildDots();
+            cachedMaxIndex = getMaxIndex();
             goToSlide(0, false);
         });
     }
     init();
     window.addEventListener('resize', () => {
-        buildDots();
+        if (hasControls) buildDots();
+        cachedMaxIndex = getMaxIndex();
         goToSlide(Math.min(currentIndex, cachedMaxIndex), false);
     });
 }

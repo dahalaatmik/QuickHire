@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
-    if (switchToRegisterBtn) {
+    if (switchToRegisterBtn && loginForm && registerForm) {
         switchToRegisterBtn.addEventListener('click', (e) => {
             e.preventDefault();
             loginForm.classList.remove('active');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (switchToLoginBtn) {
+    if (switchToLoginBtn && registerForm && loginForm) {
         switchToLoginBtn.addEventListener('click', (e) => {
             e.preventDefault();
             registerForm.classList.remove('active');
