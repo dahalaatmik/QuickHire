@@ -89,15 +89,15 @@
                         <span id="register-text">Create Free Account</span>
                         <span id="register-spinner" class="spinner" style="display: none;"></span>
                     </button>
-                    <p class="auth-switch">Already have an account? <a href="auth.html">Sign In</a></p>
+                    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Sign In</a></p>
                 </form>
             </div>
-            <a href="index.html" class="back-btn">
+            <a href="{{ url_for('index') }}" class="back-btn">
                 <i data-feather="arrow-left"></i> Back to Home
             </a>
         </div>
     </div>
 
-    <script src="../../static/js/register.js"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
 </body>
 </html>

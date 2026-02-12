@@ -1,3 +1,4 @@
+// Animation / UI only — carousel, smooth scroll, mobile nav
 document.addEventListener('DOMContentLoaded', () => {
     if (window.feather) feather.replace();
     setupFeaturesCarousel();

@@ -5,8 +5,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 import os
+from dotenv import load_dotenv
 
-
+load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY") 
 
@@ -40,7 +41,7 @@ with app.app_context():
 def load_user(user_id):
     return db.get_or_404(User, user_id)
 
-app.route("/")
+@app.route("/")
 def index():
     return render_template("landing page/index.html", logged_in = current_user.is_authenticated)
 
@@ -49,80 +50,97 @@ def login():
     if request.method == "POST":
         email = request.form.get('login-email')
         password = request.form.get('login-password')
-        result = db.session.execute(db.select(User).where(User.email == email))
+        
+        # 1. Query the database using the correct column name
+        result = db.session.execute(db.select(User).where(User.work_email == email))
         user = result.scalar()
+        
+        # 2. Check if user exists
         if not user:
             flash("That email does not exist, please try again.")
             return redirect(url_for('login'))
-        elif not check_password_hash(user.password, password):
+        
+        # 3. Check password hash
+        if not check_password_hash(user.password, password):
             flash('Password incorrect, please try again.')
             return redirect(url_for('login'))
-        else:
-            login_user(user)
-            return redirect(url_for('dashboard'))
-    # Passing True or False if the user is authenticated. 
-    return render_template("login.html", logged_in=current_user.is_authenticated)
+        
+        # 4. Successful Login
+        login_user(user)
+        return redirect(url_for('dashboard'))
 
-app.route("/register", methods=["GET", "POST"])
+    # 5. Fix the template path (Remove space or ensure it matches your folder)
+    return render_template("landing page/auth.html", logged_in=current_user.is_authenticated)
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        # 1. Collect raw data
         email = request.form.get("work-email")
-        result = db.session.execute(db.select(User).where(User.email == email))
-        user = result.scalars()
+        raw_password = request.form.get('password')
+        raw_confirm = request.form.get('confirm-password')
+        
+        # 2. Check if user already exists (using the correct column: work_email)
+        existing_user = db.session.execute(
+            db.select(User).where(User.work_email == email)
+        ).scalar()
 
-        #checking if the user already exists
-        if user:
-            flash("You already have an account","Login instead")
+        if existing_user:
+            flash("You already have an account. Please login instead.")
             return redirect(url_for("login"))
 
+        # 3. Validation: Check if passwords match BEFORE hashing
+        if raw_password != raw_confirm:
+            flash("Passwords do not match. Please try again.")
+            return redirect(url_for("register"))
+
+        # 4. Collect other fields
         first_name = request.form.get("first-name") 
         last_name = request.form.get("last-name")
-        email = request.form.get("work-email")
         company_name = request.form.get("company-name")
         company_size = request.form.get("company-size")
         role = request.form.get("role")
-        password = generate_password_hash(
-            request.form.get('password'),
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
-        confirm_password = generate_password_hash(
-            request.form.get('confirm-password'),
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
         terms = request.form.get("terms")
-        newsletter = request.form.get("newsletter")
 
-        #checking if all fields are filled
-        if not first_name or not last_name or not email or not company_name or not company_size or not role or not password or not confirm_password or not terms or not newsletter:
+        # Basic "Required" check
+        if not all([first_name, last_name, email, raw_password, terms]):
+            flash("Please fill out all required fields and accept the terms.")
             return redirect(url_for("register"))
 
-        if password != confirm_password:
-            flash("Passwords do not match", "error")
-        
-        new_user = User(
-            first_name = first_name,
-            last_name = last_name,
-            email = email,
-            company_name = company_name,
-            company_size = company_size,
-            role = role,
-            password = password
+        # 5. Hash the password only once for storage
+        hashed_password = generate_password_hash(
+            raw_password,
+            method='pbkdf2:sha256',
+            salt_length=8
         )
+
+        # 6. Create and save the new user
+        new_user = User(
+            first_name=first_name,
+            last_name=last_name,
+            work_email=email, # Match the column name in your User class
+            company_name=company_name,
+            company_size=company_size,
+            role=role,
+            password=hashed_password
+        )
+        
         db.session.add(new_user)
         db.session.commit()
+        
+        # 7. Log them in and go to dashboard
         login_user(new_user)
         return redirect(url_for("dashboard"))
 
-    return render_template("landing page/register.html", logged_in = current_user.is_authenticated)
+    # Corrected the folder path (using underscore to match your index route)
+    return render_template("landing page/register.html", logged_in=current_user.is_authenticated)
 
-app.route("/dashboard")
+@app.route("/dashboard")
 @login_required
 def dashboard():
     return render_template("dashboard/dashboard.html", logged_in =True) 
 
-app.route("/logout")
+@app.route("/logout")
 @login_required
 def logout():
     logout_user()

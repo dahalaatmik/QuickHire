@@ -1,4 +1,4 @@
-// sidebar.js — Injects shared sidebar for dashboard pages. Include before page script.
+// Animation / UI only — sidebar injection, active link highlight, mobile menu toggle
 (function () {
     const SIDEBAR_HTML = `
     <aside class="sidebar" id="sidebar">

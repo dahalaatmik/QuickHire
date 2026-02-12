@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 <body>
-    <a href="index.html" class="auth-brand">QuickHire</a>
+    <a href="{{ url_for('index') }}" class="auth-brand">QuickHire</a>
 
     <div class="auth-container">
         <div class="auth-card">
@@ -30,16 +30,16 @@
                         <span id="login-text">Sign In</span>
                         <span id="login-spinner" class="spinner" style="display: none;"></span>
                     </button>
-                    <p class="auth-switch">Don't have an account? <a href="register.html" id="switch-to-register">Sign Up</a></p>
+                    <p class="auth-switch">Don't have an account? <a href="{{ url_for('register') }}" id="switch-to-register">Sign Up</a></p>
                 </form>
             </div> 
 
-            <a href="index.html" class="back-btn">
+            <a href="{{ url_for('index') }}" class="back-btn">
                 <i data-feather="arrow-left"></i> Back to Home
             </a>
         </div>
     </div>
 
-    <script src="../../static/js/auth.js"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
