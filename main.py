@@ -39,7 +39,7 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.get_or_404(User, user_id)
+    return db.session.get(User, int(user_id))
 
 @app.route("/")
 def index():
