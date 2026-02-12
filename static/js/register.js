@@ -13,17 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
 
-        if (password !== confirmPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
-
-        if (password.length < 8) {
-            alert('Password must be at least 8 characters long!');
-            return;
+        function validatePasswords() {
+            const passwordField = document.getElementById('password');
+            const confirmField = document.getElementById('confirm-password');
+            
+            const pass = passwordField.value;
+            const confirm = confirmField.value;
+        
+            // Validation Criteria
+            const isLengthValid = pass.length > 8; // "More than 8" means 9+
+            const hasCapital  = /[A-Z]/.test(pass);
+            const hasSmall    = /[a-z]/.test(pass);
+            const hasNumber   = /[0-9]/.test(pass);
+            const hasSpecial  = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
+        
+            // Check if everything is valid AND they match
+            if (isLengthValid && hasCapital && hasSmall && hasNumber && hasSpecial && pass === confirm) {
+                console.log("Password is valid and matches.");
+                return true; 
+            } else {
+                // If any condition fails, alert and wipe the fields
+                alert("Invalid password or mismatch. Requirements: 9+ characters, uppercase, lowercase, number, and special character.");
+                
+                passwordField.value = "";
+                confirmField.value = "";
+                passwordField.focus(); // Reset cursor for the user
+                
+                return false;
+            }
         }
 
         const registerBtn = document.getElementById('register-btn');

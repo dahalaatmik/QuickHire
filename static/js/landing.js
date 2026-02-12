@@ -48,10 +48,6 @@ function setupMobileNav() {
 }
 
 function setupSmoothScroll() {
-    const scrollPadding = 80;
-    const duration = 700;
-    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
@@ -59,19 +55,7 @@ function setupSmoothScroll() {
                 e.preventDefault();
                 const target = document.querySelector(href);
                 if (!target) return;
-                const startY = window.scrollY ?? window.pageYOffset;
-                const endY = target.getBoundingClientRect().top + startY - scrollPadding;
-                const distance = endY - startY;
-                const startTime = performance.now();
-
-                function tick(now) {
-                    const elapsed = now - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const eased = easeOutCubic(progress);
-                    window.scrollTo(0, startY + distance * eased);
-                    if (progress < 1) requestAnimationFrame(tick);
-                }
-                requestAnimationFrame(tick);
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
