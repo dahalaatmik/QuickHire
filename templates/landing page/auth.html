@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../static/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 <body>
@@ -24,7 +24,13 @@
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password</label>
-                        <input type="password" id="login-password" name = "login-password" placeholder="••••••••" required>
+                        <div class="password-wrapper" id="login-password-wrapper">
+                            <input type="password" id="login-password" name = "login-password" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" id="login-password-toggle" aria-label="Toggle password visibility" tabindex="-1">
+                                <i data-feather="eye" class="icon-visible" aria-hidden="true"></i>
+                                <i data-feather="eye-off" class="icon-hidden" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn-primary btn-full" id="login-btn">
                         <span id="login-text">Sign In</span>

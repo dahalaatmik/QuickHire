@@ -1,0 +1,22 @@
+<nav class="navbar" role="navigation" aria-label="Main">
+    <div class="container navbar-content">
+        <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+        <div class="nav-left" id="nav-menu">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#team" class="nav-link">Team</a>
+        </div>
+        <div class="nav-center">
+            <a href="{{ url_for('index') }}" class="nav-logo">
+                <span class="logo-text">QuickHire</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('login') }}" class="nav-link">Sign In</a>
+            <a href="{{ url_for('register') }}" class="btn-primary-nav">Get Started</a>
+        </div>
+    </div>
+</nav>

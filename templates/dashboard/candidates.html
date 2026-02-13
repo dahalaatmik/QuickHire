@@ -1,152 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candidate Pool — QuickHire</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../static/css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-</head>
-<body class="dashboard-body">
+{% extends 'dashboard/base_dashboard.html' %}
 
-    <main class="main-content">
-        <div class="topbar">
-            <button class="menu-toggle" id="menu-toggle"><i data-feather="menu"></i></button>
-            <div class="breadcrumb"><span>Candidate Pool</span></div>
-            <div class="topbar-actions">
-                <button class="btn-outline-sm" id="import-btn"><i data-feather="download"></i> Import CSV</button>
-                <button class="icon-btn"><i data-feather="bell"></i></button>
-            </div>
+{% block title %}Candidate Pool{% endblock %}
+{% block breadcrumb %}Candidate Pool{% endblock %}
+{% block topbar_actions %}
+<button class="btn-outline-sm" id="import-btn"><i data-feather="download"></i> Import CSV</button>
+{% endblock %}
+
+{% block page_content %}
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-icon"><i data-feather="users"></i></span>
+        <div class="stat-label">Total Candidates</div>
+        <div class="stat-value">347</div>
+        <div class="stat-change">↑ 42 this month</div>
+    </div>
+    <div class="stat-card green">
+        <span class="stat-icon"><i data-feather="user-check"></i></span>
+        <div class="stat-label">Shortlisted</div>
+        <div class="stat-value">38</div>
+        <div class="stat-change">11% of pool</div>
+    </div>
+    <div class="stat-card amber">
+        <span class="stat-icon"><i data-feather="clock"></i></span>
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-value">91</div>
+        <div class="stat-change down">26% of pool</div>
+    </div>
+    <div class="stat-card purple">
+        <span class="stat-icon"><i data-feather="check-circle"></i></span>
+        <div class="stat-label">Hired</div>
+        <div class="stat-value">14</div>
+        <div class="stat-change">This quarter</div>
+    </div>
+</div>
+
+<!-- Search & filter row -->
+<div class="section-heading">
+    <h2>All Candidates</h2>
+    <div style="display:flex;gap:var(--spacing-sm);align-items:center;flex-wrap:wrap;">
+        <div class="search-box">
+            <span class="search-icon"><i data-feather="search" style="width:14px;height:14px;"></i></span>
+            <input type="text" placeholder="Search candidates…" id="cand-search">
         </div>
+        <select class="settings-input" id="cand-status-filter" style="width:150px;">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="shortlisted">Shortlisted</option>
+            <option value="rejected">Rejected</option>
+            <option value="hired">Hired</option>
+        </select>
+        <select class="settings-input" id="cand-role-filter" style="width:170px;">
+            <option value="all">All Applied Roles</option>
+            <option value="backend">Senior Backend Dev</option>
+            <option value="frontend">Frontend Lead</option>
+            <option value="pm">Product Manager</option>
+            <option value="designer">UI/UX Designer</option>
+            <option value="devops">DevOps Engineer</option>
+        </select>
+    </div>
+</div>
 
-        <div class="page-content">
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-icon"><i data-feather="users"></i></span>
-                    <div class="stat-label">Total Candidates</div>
-                    <div class="stat-value">347</div>
-                    <div class="stat-change">↑ 42 this month</div>
-                </div>
-                <div class="stat-card green">
-                    <span class="stat-icon"><i data-feather="user-check"></i></span>
-                    <div class="stat-label">Shortlisted</div>
-                    <div class="stat-value">38</div>
-                    <div class="stat-change">11% of pool</div>
-                </div>
-                <div class="stat-card amber">
-                    <span class="stat-icon"><i data-feather="clock"></i></span>
-                    <div class="stat-label">Pending Review</div>
-                    <div class="stat-value">91</div>
-                    <div class="stat-change down">26% of pool</div>
-                </div>
-                <div class="stat-card purple">
-                    <span class="stat-icon"><i data-feather="check-circle"></i></span>
-                    <div class="stat-label">Hired</div>
-                    <div class="stat-value">14</div>
-                    <div class="stat-change">This quarter</div>
-                </div>
-            </div>
+<!-- Candidates Table -->
+<div class="data-table-wrap">
+    <table>
+        <thead><tr>
+            <th>Candidate</th>
+            <th>Applied For</th>
+            <th>Skills</th>
+            <th>Match</th>
+            <th>Status</th>
+            <th>Applied</th>
+        </tr></thead>
+        <tbody id="cand-tbody"></tbody>
+    </table>
+</div>
+{% endblock %}
 
-            <!-- Search & filter row -->
-            <div class="section-heading">
-                <h2>All Candidates</h2>
-                <div style="display:flex;gap:var(--spacing-sm);align-items:center;flex-wrap:wrap;">
-                    <div class="search-box">
-                        <span class="search-icon"><i data-feather="search" style="width:14px;height:14px;"></i></span>
-                        <input type="text" placeholder="Search candidates…" id="cand-search">
-                    </div>
-                    <select class="settings-input" id="cand-status-filter" style="width:150px;">
-                        <option value="all">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="shortlisted">Shortlisted</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="hired">Hired</option>
-                    </select>
-                    <select class="settings-input" id="cand-role-filter" style="width:170px;">
-                        <option value="all">All Applied Roles</option>
-                        <option value="backend">Senior Backend Dev</option>
-                        <option value="frontend">Frontend Lead</option>
-                        <option value="pm">Product Manager</option>
-                        <option value="designer">UI/UX Designer</option>
-                        <option value="devops">DevOps Engineer</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Candidates Table -->
-            <div class="data-table-wrap">
-                <table>
-                    <thead><tr>
-                        <th>Candidate</th>
-                        <th>Applied For</th>
-                        <th>Skills</th>
-                        <th>Match</th>
-                        <th>Status</th>
-                        <th>Applied</th>
-                    </tr></thead>
-                    <tbody id="cand-tbody"></tbody>
-                </table>
-            </div>
+{% block modals %}
+<!-- Candidate Detail Drawer -->
+<div id="cand-drawer" class="drawer">
+    <div class="drawer-backdrop" id="cand-drawer-backdrop"></div>
+    <div class="drawer-content">
+        <div class="drawer-header">
+            <h2 class="drawer-title" id="cd-name">—</h2>
+            <button class="drawer-close" id="cd-close"><i data-feather="x"></i></button>
         </div>
-    </main>
-
-    <!-- Candidate Detail Drawer -->
-    <div id="cand-drawer" class="drawer">
-        <div class="drawer-backdrop" id="cand-drawer-backdrop"></div>
-        <div class="drawer-content">
-            <div class="drawer-header">
-                <h2 class="drawer-title" id="cd-name">—</h2>
-                <button class="drawer-close" id="cd-close"><i data-feather="x"></i></button>
-            </div>
-            <div class="drawer-body">
-                <section class="drawer-section">
-                    <div style="display:flex;align-items:center;gap:var(--spacing-lg);">
-                        <div class="avatar-sm" id="cd-avatar" style="width:56px;height:56px;font-size:18px;">SC</div>
-                        <div>
-                            <h3 style="color:var(--color-text-high);font-size:var(--font-size-lg);margin-bottom:2px;" id="cd-name2">—</h3>
-                            <p style="font-size:var(--font-size-sm);color:var(--color-text-disabled);" id="cd-email">—</p>
-                        </div>
+        <div class="drawer-body">
+            <section class="drawer-section">
+                <div style="display:flex;align-items:center;gap:var(--spacing-lg);">
+                    <div class="avatar-sm" id="cd-avatar" style="width:56px;height:56px;font-size:18px;">SC</div>
+                    <div>
+                        <h3 style="color:var(--color-text-high);font-size:var(--font-size-lg);margin-bottom:2px;" id="cd-name2">—</h3>
+                        <p style="font-size:var(--font-size-sm);color:var(--color-text-disabled);" id="cd-email">—</p>
                     </div>
-                </section>
-                <section class="drawer-section">
-                    <h3 class="section-header">Match Score</h3>
-                    <div class="match-score-display">
-                        <div class="score-ring-large">
-                            <svg width="120" height="120">
-                                <circle cx="60" cy="60" r="54" fill="none" stroke="#1F2833" stroke-width="8"/>
-                                <circle id="cd-score-circle" cx="60" cy="60" r="54" fill="none" stroke="#2ECC71" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0" transform="rotate(-90 60 60)" stroke-linecap="round"/>
-                            </svg>
-                            <span class="score-text" id="cd-score-text">—</span>
-                        </div>
-                        <div>
-                            <p style="font-size:var(--font-size-sm);color:var(--color-text-low);margin-bottom:var(--spacing-sm);" id="cd-applied-for">—</p>
-                            <ul class="ai-summary" id="cd-summary"></ul>
-                        </div>
+                </div>
+            </section>
+            <section class="drawer-section">
+                <h3 class="section-header">Match Score</h3>
+                <div class="match-score-display">
+                    <div class="score-ring-large">
+                        <svg width="120" height="120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#1F2833" stroke-width="8"/>
+                            <circle id="cd-score-circle" cx="60" cy="60" r="54" fill="none" stroke="#2ECC71" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+                        </svg>
+                        <span class="score-text" id="cd-score-text">—</span>
                     </div>
-                </section>
-                <section class="drawer-section">
-                    <h3 class="section-header">Skills</h3>
-                    <div id="cd-skills"></div>
-                </section>
-                <section class="drawer-section">
-                    <h3 class="section-header">Resume Preview</h3>
-                    <div class="resume-preview"><div class="resume-placeholder"><i data-feather="file-text"></i><p>Resume preview — demo mode</p></div></div>
-                </section>
-            </div>
-            <div class="drawer-footer">
-                <button class="btn-danger" id="cd-reject"><i data-feather="x-circle"></i> Reject</button>
-                <button class="btn-neutral" id="cd-shortlist"><i data-feather="star"></i> Shortlist</button>
-                <button class="btn-primary" id="cd-schedule"><i data-feather="calendar"></i> Schedule</button>
-            </div>
+                    <div>
+                        <p style="font-size:var(--font-size-sm);color:var(--color-text-low);margin-bottom:var(--spacing-sm);" id="cd-applied-for">—</p>
+                        <ul class="ai-summary" id="cd-summary"></ul>
+                    </div>
+                </div>
+            </section>
+            <section class="drawer-section">
+                <h3 class="section-header">Skills</h3>
+                <div id="cd-skills"></div>
+            </section>
+            <section class="drawer-section">
+                <h3 class="section-header">Resume Preview</h3>
+                <div class="resume-preview"><div class="resume-placeholder"><i data-feather="file-text"></i><p>Resume preview — demo mode</p></div></div>
+            </section>
+        </div>
+        <div class="drawer-footer">
+            <button class="btn-danger" id="cd-reject"><i data-feather="x-circle"></i> Reject</button>
+            <button class="btn-neutral" id="cd-shortlist"><i data-feather="star"></i> Shortlist</button>
+            <button class="btn-primary" id="cd-schedule"><i data-feather="calendar"></i> Schedule</button>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script src="../../static/js/sidebar.js"></script>
-    <script src="../../static/js/toast.js"></script>
-    <script src="../../static/js/candidates.js"></script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/candidates.js') }}"></script>
+{% endblock %}

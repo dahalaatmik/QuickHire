@@ -138,7 +138,27 @@ def register():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard/dashboard.html", logged_in =True) 
+    return render_template("dashboard/dashboard.html", logged_in=True, active_page="dashboard")
+
+@app.route("/dashboard/jobs")
+@login_required
+def jobs():
+    return render_template("dashboard/jobs.html", logged_in=True, active_page="jobs")
+
+@app.route("/dashboard/candidates")
+@login_required
+def candidates():
+    return render_template("dashboard/candidates.html", logged_in=True, active_page="candidates")
+
+@app.route("/dashboard/analytics")
+@login_required
+def analytics():
+    return render_template("dashboard/analytics.html", logged_in=True, active_page="analytics")
+
+@app.route("/dashboard/settings")
+@login_required
+def settings():
+    return render_template("dashboard/settings.html", logged_in=True, active_page="settings")
 
 @app.route("/logout")
 @login_required
