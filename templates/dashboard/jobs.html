@@ -3,113 +3,91 @@
 {% block title %}Job Postings{% endblock %}
 {% block breadcrumb %}Job Postings{% endblock %}
 {% block topbar_actions %}
-<button class="btn-outline-sm" id="new-job-btn"><i data-feather="plus"></i> New Job</button>
+<a href="{{ url_for('jobs.job_create') }}" class="btn-outline-sm"><i data-feather="plus"></i> New Job</a>
 {% endblock %}
 
 {% block page_content %}
-<!-- Stats row specific to jobs -->
+<!-- Stats row -->
 <div class="stats-grid">
     <div class="stat-card">
         <span class="stat-icon"><i data-feather="briefcase"></i></span>
         <div class="stat-label">Total Postings</div>
-        <div class="stat-value">24</div>
-        <div class="stat-change">↑ 4 this month</div>
+        <div class="stat-value">{{ total_postings }}</div>
     </div>
     <div class="stat-card green">
         <span class="stat-icon"><i data-feather="check-circle"></i></span>
-        <div class="stat-label">Open Now</div>
-        <div class="stat-value">12</div>
-        <div class="stat-change">Active & accepting</div>
+        <div class="stat-label">Active</div>
+        <div class="stat-value">{{ open_now }}</div>
+        <div class="stat-change">Accepting resumes</div>
     </div>
     <div class="stat-card amber">
-        <span class="stat-icon"><i data-feather="clock"></i></span>
-        <div class="stat-label">Avg Time to Fill</div>
-        <div class="stat-value">18d</div>
-        <div class="stat-change down">↓ 3d vs last month</div>
+        <span class="stat-icon"><i data-feather="edit-3"></i></span>
+        <div class="stat-label">Draft</div>
+        <div class="stat-value">{{ draft_count }}</div>
     </div>
     <div class="stat-card red">
-        <span class="stat-icon"><i data-feather="alert-circle"></i></span>
-        <div class="stat-label">Closing Soon</div>
-        <div class="stat-value">3</div>
-        <div class="stat-change down">Within 48 hours</div>
+        <span class="stat-icon"><i data-feather="x-circle"></i></span>
+        <div class="stat-label">Closed</div>
+        <div class="stat-value">{{ closed_count }}</div>
     </div>
 </div>
 
-<!-- Filter / Search bar -->
+<!-- Jobs List -->
 <div class="section-heading">
     <h2>All Postings</h2>
-    <div style="display:flex;gap:var(--spacing-sm);align-items:center;flex-wrap:wrap;">
-        <div class="search-box">
-            <span class="search-icon"><i data-feather="search" style="width:14px;height:14px;"></i></span>
-            <input type="text" placeholder="Search jobs…" id="jobs-search">
-        </div>
-        <select class="settings-input" id="jobs-dept-filter" style="width:160px;">
-            <option value="all">All Departments</option>
-            <option value="eng">Engineering</option>
-            <option value="product">Product</option>
-            <option value="design">Design</option>
-            <option value="sales">Sales</option>
-            <option value="hr">HR</option>
-        </select>
-        <select class="settings-input" id="jobs-status-filter" style="width:140px;">
-            <option value="all">All Statuses</option>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="draft">Draft</option>
-        </select>
-    </div>
 </div>
 
-<!-- Jobs Table -->
+{% if jobs %}
 <div class="data-table-wrap">
     <table>
-        <thead><tr>
-            <th>Job Title</th>
-            <th>Department</th>
-            <th>Location</th>
-            <th>Candidates</th>
-            <th>Posted</th>
-            <th>Status</th>
-        </tr></thead>
-        <tbody id="jobs-tbody"></tbody>
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Category</th>
+                <th>Candidates</th>
+                <th>Created</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" style="text-decoration:none;color:var(--color-text-high);font-weight:600;">
+                        {{ job.title }}
+                    </a>
+                </td>
+                <td style="color:var(--color-text-low);font-size:var(--font-size-sm);">{{ job.field_category or '—' }}</td>
+                <td>
+                    <span style="font-weight:500;">{{ job.candidates|length }}</span>
+                </td>
+                <td style="font-size:var(--font-size-sm);color:var(--color-text-disabled);">{{ job.created_at.strftime('%b %d, %Y') if job.created_at else '—' }}</td>
+                <td>
+                    <span class="badge {% if job.status == 'active' %}badge-active{% elif job.status == 'draft' %}badge-pending{% else %}badge-rejected{% endif %}">{{ job.status }}</span>
+                </td>
+                <td>
+                    <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="btn-outline-sm" style="padding:4px 10px;font-size:var(--font-size-xs);">
+                        <i data-feather="eye" style="width:12px;height:12px;"></i> View
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
-{% endblock %}
-
-{% block modals %}
-<!-- New Job Modal -->
-<div id="new-job-modal" class="modal">
-    <div class="modal-backdrop" id="njm-backdrop"></div>
-    <div class="modal-content" style="max-width:560px;">
-        <div class="modal-header">
-            <h2 class="modal-title">Create New Job Posting</h2>
-            <button class="modal-close" id="njm-close"><i data-feather="x"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group"><label>Job Title</label><input type="text" id="njm-title" placeholder="e.g. Senior Backend Developer"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);">
-                <div class="form-group"><label>Department</label>
-                    <select class="settings-input" style="width:100%;" id="njm-dept">
-                        <option>Engineering</option><option>Product</option><option>Design</option><option>Sales</option><option>HR</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Location</label><input type="text" id="njm-location" placeholder="e.g. Remote / Sydney"></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);">
-                <div class="form-group"><label>Salary Min (AUD)</label><input type="number" id="njm-sal-min" placeholder="100000"></div>
-                <div class="form-group"><label>Salary Max (AUD)</label><input type="number" id="njm-sal-max" placeholder="160000"></div>
-            </div>
-            <div class="form-group"><label>Description</label><textarea id="njm-desc" rows="4" placeholder="Describe the role, responsibilities…"></textarea></div>
-            <div class="form-group"><label>Required Skills (comma separated)</label><input type="text" id="njm-skills" placeholder="React, TypeScript, Node.js"></div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-outline" id="njm-cancel">Cancel</button>
-            <button class="btn-primary" id="njm-submit"><i data-feather="check"></i> Create Posting</button>
-        </div>
-    </div>
+{% else %}
+<div class="card-panel" style="padding:var(--spacing-2xl);text-align:center;color:var(--color-text-disabled);">
+    <i data-feather="briefcase" style="width:40px;height:40px;margin-bottom:var(--spacing-sm);"></i>
+    <h3 style="color:var(--color-text-high);font-size:var(--font-size-lg);margin-bottom:var(--spacing-xs);">No job postings yet</h3>
+    <p style="margin-bottom:var(--spacing-lg);">Create your first job posting to start screening candidates with AI.</p>
+    <a href="{{ url_for('jobs.job_create') }}" class="btn-primary"><i data-feather="plus"></i> Create Your First Job</a>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/jobs.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => { if (window.feather) feather.replace(); });
+</script>
 {% endblock %}

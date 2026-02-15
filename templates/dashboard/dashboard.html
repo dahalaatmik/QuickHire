@@ -3,7 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 {% block breadcrumb %}Dashboard{% endblock %}
 {% block topbar_actions %}
-<a href="{{ url_for('jobs') }}" class="btn-outline-sm"><i data-feather="plus"></i> Create Job</a>
+<a href="{{ url_for('jobs.job_create') }}" class="btn-outline-sm"><i data-feather="plus"></i> Create Job</a>
 {% endblock %}
 
 {% block page_content %}
@@ -12,139 +12,81 @@
     <div class="stat-card">
         <span class="stat-icon"><i data-feather="briefcase"></i></span>
         <div class="stat-label">Active Jobs</div>
-        <div class="stat-value">12</div>
-        <div class="stat-change">↑ 3 this week</div>
+        <div class="stat-value">{{ active_jobs }}</div>
+        <div class="stat-change">{{ total_jobs }} total</div>
     </div>
     <div class="stat-card green">
         <span class="stat-icon"><i data-feather="users"></i></span>
         <div class="stat-label">Total Candidates</div>
-        <div class="stat-value">347</div>
-        <div class="stat-change">↑ 42 this month</div>
+        <div class="stat-value">{{ total_candidates }}</div>
     </div>
     <div class="stat-card amber">
         <span class="stat-icon"><i data-feather="clock"></i></span>
         <div class="stat-label">Pending Review</div>
-        <div class="stat-value">28</div>
-        <div class="stat-change down">↑ 5 awaiting action</div>
+        <div class="stat-value">{{ pending_review }}</div>
+        <div class="stat-change down">Awaiting action</div>
     </div>
     <div class="stat-card purple">
         <span class="stat-icon"><i data-feather="check-circle"></i></span>
         <div class="stat-label">Interviews Scheduled</div>
-        <div class="stat-value">9</div>
-        <div class="stat-change">↑ 2 this week</div>
+        <div class="stat-value">{{ interviews_scheduled }}</div>
     </div>
 </div>
 
-<!-- Two col: Upload + Activity -->
+<!-- Two col: Quick Actions + Activity -->
 <div class="two-col">
     <div>
-        <div class="section-heading"><h2>Quick Screen</h2></div>
-        <div id="upload-view" class="card-panel" style="padding:0;overflow:hidden;">
-            <div class="drop-zone" id="drop-zone" style="border-radius:10px;">
-                <i data-feather="upload-cloud" class="drop-icon"></i>
-                <h3 class="drop-header">Upload Job Description</h3>
-                <p class="drop-subtext">Drag &amp; drop a PDF or DOCX to start AI screening</p>
-                <button class="btn-outline" type="button" id="browse-btn">Browse Files</button>
-                <input type="file" id="file-input" accept=".pdf,.docx" style="display:none;">
-            </div>
-            <div id="processing-state" style="display:none;padding:var(--spacing-lg);">
-                <div class="processing-content">
-                    <div class="loader" style="width:40px;height:40px;margin:0 auto var(--spacing-md);"></div>
-                    <p class="processing-text" style="font-size:var(--font-size-base);margin-bottom:var(--spacing-md);">Analyzing requirements…</p>
-                    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-                    <p class="progress-percent" id="progress-percent" style="margin-top:6px;">0%</p>
+        <div class="section-heading"><h2>Quick Actions</h2></div>
+        <div class="card-panel" style="padding:var(--spacing-lg);">
+            <a href="{{ url_for('jobs.job_create') }}" class="quick-action-link" style="display:flex;align-items:center;gap:var(--spacing-md);padding:var(--spacing-md);border-radius:8px;text-decoration:none;color:var(--color-text-high);border:1px solid var(--color-border);margin-bottom:var(--spacing-sm);transition:border-color var(--transition-fast);">
+                <i data-feather="plus-circle" style="color:var(--color-primary);"></i>
+                <div>
+                    <div style="font-weight:600;">Create New Job</div>
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-low);">Post a job description and start screening</div>
                 </div>
-            </div>
+            </a>
+            <a href="{{ url_for('jobs.jobs_list') }}" class="quick-action-link" style="display:flex;align-items:center;gap:var(--spacing-md);padding:var(--spacing-md);border-radius:8px;text-decoration:none;color:var(--color-text-high);border:1px solid var(--color-border);margin-bottom:var(--spacing-sm);transition:border-color var(--transition-fast);">
+                <i data-feather="briefcase" style="color:var(--color-primary);"></i>
+                <div>
+                    <div style="font-weight:600;">View All Jobs</div>
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-low);">Manage your job postings and candidates</div>
+                </div>
+            </a>
+            <a href="{{ url_for('candidates.candidates_list') }}" class="quick-action-link" style="display:flex;align-items:center;gap:var(--spacing-md);padding:var(--spacing-md);border-radius:8px;text-decoration:none;color:var(--color-text-high);border:1px solid var(--color-border);transition:border-color var(--transition-fast);">
+                <i data-feather="users" style="color:var(--color-primary);"></i>
+                <div>
+                    <div style="font-weight:600;">Candidate Pool</div>
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-low);">View all candidates across jobs</div>
+                </div>
+            </a>
         </div>
     </div>
     <div>
-        <div class="section-heading"><h2>Recent Activity</h2></div>
-        <div class="card-panel" style="padding:0;" id="activity-list"></div>
-    </div>
-</div>
-
-<!-- Results Table -->
-<div id="results-section" style="display:none;margin-top:var(--spacing-xl);">
-    <div class="section-heading">
-        <h2>Senior Developer — Candidate Results</h2>
-        <div style="display:flex;gap:var(--spacing-sm);">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="high">High Match</button>
-            <button class="filter-btn" data-filter="shortlisted">Shortlisted</button>
-            <button class="filter-btn" data-filter="rejected">Rejected</button>
-        </div>
-    </div>
-    <div class="data-table-wrap">
-        <table>
-            <thead><tr>
-                <th>Candidate</th><th>Experience</th><th>Top Skills</th><th>Match</th><th>Status</th>
-            </tr></thead>
-            <tbody id="candidates-tbody"></tbody>
-        </table>
-    </div>
-</div>
-{% endblock %}
-
-{% block modals %}
-<!-- Drawer -->
-<div id="candidate-drawer" class="drawer">
-    <div class="drawer-backdrop" id="drawer-backdrop"></div>
-    <div class="drawer-content">
-        <div class="drawer-header">
-            <h2 class="drawer-title" id="drawer-candidate-name">—</h2>
-            <button class="drawer-close" id="drawer-close"><i data-feather="x"></i></button>
-        </div>
-        <div class="drawer-body">
-            <section class="drawer-section">
-                <h3 class="section-header">AI Match Score</h3>
-                <div class="match-score-display">
-                    <div class="score-ring-large">
-                        <svg width="120" height="120">
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#1F2833" stroke-width="8"/>
-                            <circle id="drawer-score-circle" cx="60" cy="60" r="54" fill="none" stroke="#2ECC71" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0" transform="rotate(-90 60 60)" stroke-linecap="round"/>
-                        </svg>
-                        <span class="score-text" id="drawer-score-text">95%</span>
+        <div class="section-heading"><h2>Recent Candidates</h2></div>
+        <div class="card-panel" style="padding:0;">
+            {% if recent_candidates %}
+            <div style="max-height:300px;overflow-y:auto;">
+                {% for c in recent_candidates %}
+                <a href="{{ url_for('candidates.candidate_detail', candidate_id=c.id) }}" style="display:flex;align-items:center;gap:var(--spacing-md);padding:var(--spacing-sm) var(--spacing-md);border-bottom:1px solid var(--color-border);text-decoration:none;color:inherit;transition:background var(--transition-fast);" class="activity-item">
+                    <div class="avatar-sm">{{ (c.name or 'U')[0] }}{{ (c.name or 'U').split(' ')[-1][0] if c.name and ' ' in c.name else '' }}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:500;color:var(--color-text-high);font-size:var(--font-size-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.name or c.resume_filename }}</div>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-low);">{{ c.job.title }} &middot; {{ c.status }}</div>
                     </div>
-                    <ul class="ai-summary" id="drawer-ai-summary"></ul>
-                </div>
-            </section>
-            <section class="drawer-section">
-                <h3 class="section-header">Skills</h3>
-                <div id="drawer-skills"></div>
-            </section>
-            <section class="drawer-section">
-                <h3 class="section-header">Contact</h3>
-                <p style="font-size:var(--font-size-sm);color:var(--color-text-low);" id="drawer-email">—</p>
-            </section>
-            <section class="drawer-section">
-                <h3 class="section-header">Resume Preview</h3>
-                <div class="resume-preview"><div class="resume-placeholder"><i data-feather="file-text"></i><p>Resume preview — demo mode</p></div></div>
-            </section>
-        </div>
-        <div class="drawer-footer">
-            <button class="btn-danger" id="reject-btn"><i data-feather="x-circle"></i> Reject</button>
-            <button class="btn-neutral" id="shortlist-btn"><i data-feather="star"></i> Shortlist</button>
-            <button class="btn-primary" id="schedule-btn"><i data-feather="calendar"></i> Schedule</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div id="schedule-modal" class="modal">
-    <div class="modal-backdrop" id="modal-backdrop"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Schedule Interview</h2>
-            <button class="modal-close" id="modal-close"><i data-feather="x"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group"><label>Candidate Email</label><input type="email" id="candidate-email" readonly></div>
-            <div class="form-group"><label>Subject</label><input type="text" id="email-subject"></div>
-            <div class="form-group"><label>Message</label><textarea id="email-message" rows="5"></textarea></div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-outline" id="modal-cancel">Cancel</button>
-            <button class="btn-primary" id="send-invitation"><i data-feather="send"></i> Send Invitation</button>
+                    {% if c.score %}
+                    <span class="badge {% if c.score.tier == 'Strong' %}badge-active{% elif c.score.tier == 'Medium' %}badge-pending{% else %}badge-rejected{% endif %}">{{ c.score.overall_score|int }}%</span>
+                    {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="padding:var(--spacing-xl);text-align:center;color:var(--color-text-disabled);">
+                <i data-feather="inbox" style="width:32px;height:32px;margin-bottom:var(--spacing-sm);"></i>
+                <p>No candidates yet. Create a job and upload resumes to get started.</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -1,0 +1,408 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{{ job.title }}{% endblock %}
+{% block breadcrumb %}Job Postings / {{ job.title }}{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('exports.export_job_report', job_id=job.id) }}" class="btn-outline-sm"><i data-feather="download"></i> Export PDF</a>
+{% endblock %}
+
+{% block page_content %}
+<!-- Flash messages -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div style="margin-bottom:var(--spacing-lg);">
+    {% for msg in messages %}
+    <div class="flash-message" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22C55E;padding:var(--spacing-sm) var(--spacing-md);border-radius:8px;font-size:var(--font-size-sm);margin-bottom:var(--spacing-xs);">{{ msg }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- Job Header -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--spacing-xl);flex-wrap:wrap;gap:var(--spacing-md);">
+    <div>
+        <h1 style="font-size:var(--font-size-2xl);font-weight:700;color:var(--color-text-high);margin-bottom:var(--spacing-xs);">{{ job.title }}</h1>
+        <div style="display:flex;gap:var(--spacing-md);align-items:center;flex-wrap:wrap;">
+            <span class="badge {% if job.status == 'active' %}badge-active{% elif job.status == 'draft' %}badge-pending{% else %}badge-rejected{% endif %}" style="font-size:var(--font-size-xs);">{{ job.status|upper }}</span>
+            {% if job.field_category %}
+            <span style="font-size:var(--font-size-sm);color:var(--color-text-low);">{{ job.field_category }}</span>
+            {% endif %}
+            <span style="font-size:var(--font-size-sm);color:var(--color-text-disabled);">Created {{ job.created_at.strftime('%b %d, %Y') if job.created_at else 'N/A' }}</span>
+        </div>
+    </div>
+    <div style="display:flex;gap:var(--spacing-sm);">
+        <button class="btn-outline-sm" onclick="toggleJobStatus()" id="status-toggle-btn">
+            {% if job.status == 'active' %}<i data-feather="pause"></i> Close{% else %}<i data-feather="play"></i> Activate{% endif %}
+        </button>
+        <form method="POST" action="{{ url_for('jobs.delete_job', job_id=job.id) }}" onsubmit="return confirm('Delete this job and all candidates?');" style="display:inline;">
+            <button type="submit" class="btn-outline-sm" style="color:var(--color-danger);border-color:rgba(239,68,68,0.3);"><i data-feather="trash-2"></i></button>
+        </form>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom:var(--spacing-xl);">
+    <div class="stat-card">
+        <span class="stat-icon"><i data-feather="users"></i></span>
+        <div class="stat-label">Total Candidates</div>
+        <div class="stat-value">{{ candidates|length }}</div>
+    </div>
+    <div class="stat-card green">
+        <span class="stat-icon"><i data-feather="user-check"></i></span>
+        <div class="stat-label">Screened</div>
+        <div class="stat-value">{{ candidates|selectattr('status', 'ne', 'pending')|list|length }}</div>
+    </div>
+    <div class="stat-card amber">
+        <span class="stat-icon"><i data-feather="star"></i></span>
+        <div class="stat-label">Shortlisted</div>
+        <div class="stat-value">{{ candidates|selectattr('status', 'eq', 'shortlisted')|list|length }}</div>
+    </div>
+    <div class="stat-card purple">
+        <span class="stat-icon"><i data-feather="check-circle"></i></span>
+        <div class="stat-label">Hired</div>
+        <div class="stat-value">{{ candidates|selectattr('status', 'eq', 'hired')|list|length }}</div>
+    </div>
+</div>
+
+<!-- Two columns: Parsed info + Upload -->
+<div class="two-col" style="margin-bottom:var(--spacing-xl);">
+    <!-- AI-Parsed Requirements -->
+    <div class="card-panel" style="padding:var(--spacing-lg);">
+        <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-md);">AI-Parsed Requirements</h3>
+        {% if parsed_skills %}
+        <div style="margin-bottom:var(--spacing-md);">
+            <h4 style="font-size:var(--font-size-sm);color:var(--color-text-low);margin-bottom:var(--spacing-xs);">Skills</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-xs);">
+                {% for skill in parsed_skills %}
+                <span class="skill-tag">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% if parsed_requirements %}
+        <div>
+            <h4 style="font-size:var(--font-size-sm);color:var(--color-text-low);margin-bottom:var(--spacing-xs);">Key Requirements</h4>
+            <ul style="font-size:var(--font-size-sm);color:var(--color-text-low);padding-left:var(--spacing-lg);line-height:1.8;">
+                {% for req in parsed_requirements %}
+                <li>{{ req }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if not parsed_skills and not parsed_requirements %}
+        <p style="color:var(--color-text-disabled);font-size:var(--font-size-sm);">AI parsing data not available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Upload Resumes -->
+    <div class="card-panel" style="padding:var(--spacing-lg);">
+        <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-md);">Upload Resumes</h3>
+        <div class="drop-zone" id="resume-drop-zone" style="border-radius:10px;min-height:160px;">
+            <i data-feather="upload-cloud" class="drop-icon"></i>
+            <h3 class="drop-header">Drop resumes here</h3>
+            <p class="drop-subtext">PDF or DOCX files (max 50 per job)</p>
+            <button class="btn-outline" type="button" id="resume-browse-btn">Browse Files</button>
+            <input type="file" id="resume-file-input" accept=".pdf,.docx" multiple style="display:none;">
+        </div>
+        <div id="upload-progress" style="display:none;margin-top:var(--spacing-md);">
+            <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill"></div></div>
+            <p id="upload-status" style="font-size:var(--font-size-sm);color:var(--color-text-low);margin-top:var(--spacing-xs);">Uploading...</p>
+        </div>
+        <div id="upload-results" style="margin-top:var(--spacing-md);"></div>
+
+        {% if candidates|selectattr('status', 'eq', 'pending')|list|length > 0 %}
+        <div style="margin-top:var(--spacing-md);border-top:1px solid var(--color-border);padding-top:var(--spacing-md);">
+            <button class="btn-primary" id="analyze-btn" onclick="analyzeAll()">
+                <i data-feather="zap"></i> Analyze {{ candidates|selectattr('status', 'eq', 'pending')|list|length }} Pending Candidates with AI
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Candidate List -->
+<div style="margin-bottom:var(--spacing-lg);">
+    <div class="section-heading">
+        <h2>Candidates ({{ candidates|length }})</h2>
+        <div style="display:flex;gap:var(--spacing-sm);align-items:center;">
+            {% if candidates|selectattr('status', 'in', ['screened','shortlisted'])|list|length > 0 %}
+            <button class="btn-outline-sm" id="bulk-shortlist-btn" onclick="bulkAction('shortlisted')"><i data-feather="star"></i> Shortlist Selected</button>
+            <button class="btn-outline-sm" id="bulk-email-btn" onclick="bulkSendEmails()"><i data-feather="mail"></i> Email Selected</button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if candidates %}
+    <div class="data-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
+                    <th>Candidate</th>
+                    <th>Score</th>
+                    <th>Tier</th>
+                    <th>Skills</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in candidates %}
+                <tr data-candidate-id="{{ c.id }}" data-status="{{ c.status }}">
+                    <td><input type="checkbox" class="candidate-checkbox" value="{{ c.id }}"></td>
+                    <td>
+                        <a href="{{ url_for('candidates.candidate_detail', candidate_id=c.id) }}" style="text-decoration:none;color:var(--color-text-high);font-weight:500;">
+                            {{ c.name or c.resume_filename }}
+                        </a>
+                        {% if c.email %}
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);">{{ c.email }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if c.score %}
+                        <span style="font-weight:600;color:{% if c.score.overall_score >= 75 %}var(--color-success){% elif c.score.overall_score >= 50 %}var(--color-warning){% else %}var(--color-danger){% endif %};">{{ c.score.overall_score|int }}%</span>
+                        {% else %}
+                        <span style="color:var(--color-text-disabled);">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if c.score %}
+                        <span class="badge {% if c.score.tier == 'Strong' %}badge-active{% elif c.score.tier == 'Medium' %}badge-pending{% else %}badge-rejected{% endif %}">{{ c.score.tier }}</span>
+                        {% else %}
+                        <span class="badge badge-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="max-width:200px;">
+                        {% if c.skills %}
+                        {% set skill_list = c.skills|fromjson %}
+                        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                            {% for s in skill_list[:3] %}
+                            <span class="skill-tag-sm">{{ s }}</span>
+                            {% endfor %}
+                            {% if skill_list|length > 3 %}
+                            <span class="skill-tag-sm" style="opacity:0.6;">+{{ skill_list|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <span style="color:var(--color-text-disabled);font-size:var(--font-size-xs);">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {% if c.status == 'hired' %}badge-active{% elif c.status == 'shortlisted' %}badge-active{% elif c.status == 'rejected' %}badge-rejected{% elif c.status == 'interview_sent' %}badge-active{% else %}badge-pending{% endif %}">{{ c.status }}</span>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:4px;">
+                            {% if c.status in ['screened', 'shortlisted'] %}
+                            <button class="icon-btn-sm" title="Shortlist" onclick="updateStatus({{ c.id }}, 'shortlisted')"><i data-feather="star" style="width:14px;height:14px;"></i></button>
+                            <button class="icon-btn-sm" title="Send Interview" onclick="sendEmail({{ c.id }})"><i data-feather="mail" style="width:14px;height:14px;"></i></button>
+                            {% endif %}
+                            {% if c.status == 'interview_sent' %}
+                            <button class="icon-btn-sm" title="Mark Hired" onclick="updateStatus({{ c.id }}, 'hired')"><i data-feather="check" style="width:14px;height:14px;"></i></button>
+                            {% endif %}
+                            <button class="icon-btn-sm" title="Reject" onclick="updateStatus({{ c.id }}, 'rejected')" style="color:var(--color-danger);"><i data-feather="x" style="width:14px;height:14px;"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-panel" style="padding:var(--spacing-xl);text-align:center;color:var(--color-text-disabled);">
+        <i data-feather="inbox" style="width:40px;height:40px;margin-bottom:var(--spacing-sm);"></i>
+        <p>No candidates yet. Upload resumes above to get started.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.feather) feather.replace();
+    setupResumeUpload();
+});
+
+const JOB_ID = {{ job.id }};
+
+/* Resume Upload */
+function setupResumeUpload() {
+    const dropZone = document.getElementById('resume-drop-zone');
+    const fileInput = document.getElementById('resume-file-input');
+    const browseBtn = document.getElementById('resume-browse-btn');
+
+    if (!dropZone) return;
+
+    browseBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) uploadFiles(fileInput.files);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+    });
+}
+
+function uploadFiles(files) {
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+        formData.append('resumes', files[i]);
+    }
+
+    const progress = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('upload-progress-fill');
+    const statusEl = document.getElementById('upload-status');
+    const resultsEl = document.getElementById('upload-results');
+
+    progress.style.display = 'block';
+    progressFill.style.width = '30%';
+    statusEl.textContent = `Uploading ${files.length} file(s)...`;
+
+    fetch(`/dashboard/jobs/${JOB_ID}/upload-resumes`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        progressFill.style.width = '100%';
+        statusEl.textContent = data.message;
+
+        let html = '';
+        data.results.forEach(r => {
+            const color = r.status === 'success' ? 'var(--color-success)' : 'var(--color-danger)';
+            html += `<div style="font-size:var(--font-size-xs);color:${color};margin-bottom:2px;">${r.filename}: ${r.status}${r.error ? ' - ' + r.error : ''}</div>`;
+        });
+        resultsEl.innerHTML = html;
+
+        // Reload after a short delay to show new candidates
+        setTimeout(() => location.reload(), 1500);
+    })
+    .catch(err => {
+        statusEl.textContent = 'Upload failed: ' + err.message;
+        progressFill.style.width = '0%';
+    });
+}
+
+/* Analyze candidates */
+function analyzeAll() {
+    const btn = document.getElementById('analyze-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader" style="width:16px;height:16px;border-width:2px;"></span> Analyzing...';
+
+    fetch(`/dashboard/jobs/${JOB_ID}/analyze`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+        if (window.toast) toast(data.message || 'Analysis complete', 'success');
+        setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-feather="zap"></i> Retry Analysis';
+        if (window.feather) feather.replace();
+        if (window.toast) toast('Analysis failed: ' + err.message, 'error');
+    });
+}
+
+/* Status updates */
+function updateStatus(candidateId, newStatus) {
+    fetch(`/dashboard/candidates/${candidateId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (window.toast) toast(`Status updated to ${data.status}`, 'success');
+        setTimeout(() => location.reload(), 500);
+    })
+    .catch(err => {
+        if (window.toast) toast('Failed to update status', 'error');
+    });
+}
+
+/* Email */
+function sendEmail(candidateId) {
+    if (!confirm('Send interview invitation email to this candidate?')) return;
+
+    fetch(`/dashboard/candidates/${candidateId}/send-interview`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            if (window.toast) toast(data.error, 'error');
+        } else {
+            if (window.toast) toast(data.message, 'success');
+            setTimeout(() => location.reload(), 500);
+        }
+    })
+    .catch(err => {
+        if (window.toast) toast('Failed to send email', 'error');
+    });
+}
+
+/* Job status toggle */
+function toggleJobStatus() {
+    const newStatus = '{{ "closed" if job.status == "active" else "active" }}';
+    fetch(`/dashboard/jobs/${JOB_ID}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(r => r.json())
+    .then(() => location.reload())
+    .catch(err => {
+        if (window.toast) toast('Failed to update job status', 'error');
+    });
+}
+
+/* Bulk selection */
+function toggleSelectAll(checkbox) {
+    document.querySelectorAll('.candidate-checkbox').forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+}
+
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.candidate-checkbox:checked')).map(cb => parseInt(cb.value));
+}
+
+function bulkAction(status) {
+    const ids = getSelectedIds();
+    if (!ids.length) { if (window.toast) toast('No candidates selected', 'error'); return; }
+
+    fetch('/dashboard/candidates/bulk-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate_ids: ids, status: status })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (window.toast) toast(data.message, 'success');
+        setTimeout(() => location.reload(), 500);
+    });
+}
+
+function bulkSendEmails() {
+    const ids = getSelectedIds();
+    if (!ids.length) { if (window.toast) toast('No candidates selected', 'error'); return; }
+    if (!confirm(`Send interview emails to ${ids.length} candidate(s)?`)) return;
+
+    fetch('/dashboard/candidates/bulk-send-interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate_ids: ids })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (window.toast) toast(data.message, 'success');
+        setTimeout(() => location.reload(), 500);
+    });
+}
+</script>
+{% endblock %}

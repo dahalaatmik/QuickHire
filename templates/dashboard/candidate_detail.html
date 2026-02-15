@@ -1,0 +1,192 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{{ candidate.name or 'Candidate' }}{% endblock %}
+{% block breadcrumb %}{{ job.title }} / {{ candidate.name or 'Candidate' }}{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('exports.export_candidate', candidate_id=candidate.id) }}" class="btn-outline-sm"><i data-feather="download"></i> Export PDF</a>
+{% endblock %}
+
+{% block page_content %}
+<div style="max-width:900px;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:var(--spacing-lg);margin-bottom:var(--spacing-xl);">
+        <div class="avatar-sm" style="width:64px;height:64px;font-size:22px;">{{ (candidate.name or 'U')[0] }}{{ (candidate.name or 'U').split(' ')[-1][0] if candidate.name and ' ' in candidate.name else '' }}</div>
+        <div style="flex:1;">
+            <h1 style="font-size:var(--font-size-2xl);font-weight:700;color:var(--color-text-high);margin-bottom:2px;">{{ candidate.name or 'Unknown Candidate' }}</h1>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-low);">
+                Applied for <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" style="color:var(--color-primary);text-decoration:none;">{{ job.title }}</a>
+            </div>
+            <div style="display:flex;gap:var(--spacing-md);margin-top:var(--spacing-xs);flex-wrap:wrap;">
+                {% if candidate.email %}
+                <span style="font-size:var(--font-size-xs);color:var(--color-text-disabled);"><i data-feather="mail" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> {{ candidate.email }}</span>
+                {% endif %}
+                {% if candidate.phone %}
+                <span style="font-size:var(--font-size-xs);color:var(--color-text-disabled);"><i data-feather="phone" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> {{ candidate.phone }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div style="display:flex;gap:var(--spacing-sm);">
+            <span class="badge {% if candidate.status == 'hired' %}badge-active{% elif candidate.status == 'shortlisted' %}badge-active{% elif candidate.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}" style="font-size:var(--font-size-sm);padding:6px 14px;">{{ candidate.status }}</span>
+        </div>
+    </div>
+
+    <!-- Score Card -->
+    {% if candidate.score %}
+    <div class="card-panel" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-xl);">
+        <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-lg);">AI Assessment</h3>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:var(--spacing-xl);align-items:start;">
+            <!-- Score ring -->
+            <div style="text-align:center;">
+                <div class="score-ring-large" style="margin:0 auto;">
+                    <svg width="120" height="120">
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#1F2833" stroke-width="8"/>
+                        <circle cx="60" cy="60" r="54" fill="none"
+                                stroke="{% if candidate.score.overall_score >= 75 %}#22C55E{% elif candidate.score.overall_score >= 50 %}#EAB308{% else %}#EF4444{% endif %}"
+                                stroke-width="8" stroke-dasharray="339.292"
+                                stroke-dashoffset="{{ 339.292 * (1 - candidate.score.overall_score / 100) }}"
+                                transform="rotate(-90 60 60)" stroke-linecap="round"/>
+                    </svg>
+                    <span class="score-text">{{ candidate.score.overall_score|int }}%</span>
+                </div>
+                <div style="margin-top:var(--spacing-sm);">
+                    <span class="badge {% if candidate.score.tier == 'Strong' %}badge-active{% elif candidate.score.tier == 'Medium' %}badge-pending{% else %}badge-rejected{% endif %}">{{ candidate.score.tier }}</span>
+                </div>
+            </div>
+
+            <!-- Score breakdown -->
+            <div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);">
+                    <div>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-bottom:4px;">Skills Match</div>
+                        <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:{{ candidate.score.skills_score or 0 }}%;"></div></div>
+                        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-high);margin-top:2px;">{{ (candidate.score.skills_score or 0)|int }}%</div>
+                    </div>
+                    <div>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-bottom:4px;">Experience Match</div>
+                        <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:{{ candidate.score.experience_score or 0 }}%;"></div></div>
+                        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-high);margin-top:2px;">{{ (candidate.score.experience_score or 0)|int }}%</div>
+                    </div>
+                    <div>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-bottom:4px;">Education Match</div>
+                        <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:{{ candidate.score.education_score or 0 }}%;"></div></div>
+                        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-high);margin-top:2px;">{{ (candidate.score.education_score or 0)|int }}%</div>
+                    </div>
+                    <div>
+                        <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-bottom:4px;">Field Relevance</div>
+                        <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:{{ candidate.score.field_relevance_score or 0 }}%;"></div></div>
+                        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-high);margin-top:2px;">{{ (candidate.score.field_relevance_score or 0)|int }}%</div>
+                    </div>
+                </div>
+
+                {% if candidate.score.scoring_rationale %}
+                <div style="margin-top:var(--spacing-lg);padding-top:var(--spacing-md);border-top:1px solid var(--color-border);">
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);margin-bottom:4px;">Scoring Rationale</div>
+                    <p style="font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.6;">{{ candidate.score.scoring_rationale }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- AI Summary -->
+    {% if candidate.ai_summary %}
+    <div class="card-panel" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-xl);">
+        <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-sm);">AI Summary</h3>
+        <p style="font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.7;">{{ candidate.ai_summary }}</p>
+    </div>
+    {% endif %}
+
+    <div class="two-col" style="margin-bottom:var(--spacing-xl);">
+        <!-- Skills -->
+        <div class="card-panel" style="padding:var(--spacing-lg);">
+            <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-md);">Skills</h3>
+            {% if skills %}
+            <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-xs);">
+                {% for s in skills %}
+                <span class="skill-tag">{{ s }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color:var(--color-text-disabled);font-size:var(--font-size-sm);">No skills data available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Education -->
+        <div class="card-panel" style="padding:var(--spacing-lg);">
+            <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-md);">Education</h3>
+            {% if education %}
+            {% for edu in education %}
+            <div style="margin-bottom:var(--spacing-sm);{% if not loop.last %}border-bottom:1px solid var(--color-border);padding-bottom:var(--spacing-sm);{% endif %}">
+                {% if edu is mapping %}
+                <div style="font-weight:500;color:var(--color-text-high);font-size:var(--font-size-sm);">{{ edu.degree }} in {{ edu.field }}</div>
+                <div style="font-size:var(--font-size-xs);color:var(--color-text-disabled);">{{ edu.institution }} {{ '(' ~ edu.year ~ ')' if edu.year else '' }}</div>
+                {% else %}
+                <div style="font-size:var(--font-size-sm);color:var(--color-text-low);">{{ edu }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--color-text-disabled);font-size:var(--font-size-sm);">No education data available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Experience Summary -->
+    {% if candidate.experience_summary %}
+    <div class="card-panel" style="padding:var(--spacing-lg);margin-bottom:var(--spacing-xl);">
+        <h3 style="font-size:var(--font-size-lg);font-weight:600;color:var(--color-text-high);margin-bottom:var(--spacing-sm);">Experience Summary</h3>
+        <p style="font-size:var(--font-size-sm);color:var(--color-text-low);line-height:1.7;">{{ candidate.experience_summary }}</p>
+        {% if candidate.years_of_experience %}
+        <div style="margin-top:var(--spacing-sm);font-size:var(--font-size-xs);color:var(--color-text-disabled);">{{ candidate.years_of_experience }} years of experience</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div style="display:flex;gap:var(--spacing-sm);flex-wrap:wrap;">
+        {% if candidate.status in ['screened', 'shortlisted'] %}
+        <button class="btn-primary" onclick="updateStatus('shortlisted')"><i data-feather="star"></i> Shortlist</button>
+        <button class="btn-outline" onclick="sendInterview()"><i data-feather="mail"></i> Send Interview Invite</button>
+        {% endif %}
+        {% if candidate.status == 'interview_sent' %}
+        <button class="btn-primary" onclick="updateStatus('hired')"><i data-feather="check"></i> Mark as Hired</button>
+        {% endif %}
+        <button class="btn-danger" onclick="updateStatus('rejected')"><i data-feather="x-circle"></i> Reject</button>
+        <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="btn-outline"><i data-feather="arrow-left"></i> Back to Job</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => { if (window.feather) feather.replace(); });
+
+function updateStatus(newStatus) {
+    fetch('/dashboard/candidates/{{ candidate.id }}/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (window.toast) toast('Status updated to ' + data.status, 'success');
+        setTimeout(() => location.reload(), 500);
+    });
+}
+
+function sendInterview() {
+    if (!confirm('Send interview invitation email?')) return;
+    fetch('/dashboard/candidates/{{ candidate.id }}/send-interview', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            if (window.toast) toast(data.error, 'error');
+        } else {
+            if (window.toast) toast(data.message, 'success');
+            setTimeout(() => location.reload(), 500);
+        }
+    });
+}
+</script>
+{% endblock %}
