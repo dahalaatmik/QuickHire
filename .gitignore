@@ -1,3 +1,5 @@
 .env
 .DS_Store
 Procfile
+.vscode/
+markdown_files/dashboard_plan.md
